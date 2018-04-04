@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class Index implements Serializable {
     private Long total_count;
 
     @OneToMany(mappedBy = "index")
-    private Set<DocumentIndex> documentIndices;
+    private Set<DocumentIndex> documentIndices = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -72,6 +73,10 @@ public class Index implements Serializable {
 
     public Set<DocumentIndex> getDocumentIndices() {
         return documentIndices;
+    }
+
+    public void setDocumentIndices(Set<DocumentIndex> documentIndices) {
+        this.documentIndices = documentIndices;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
