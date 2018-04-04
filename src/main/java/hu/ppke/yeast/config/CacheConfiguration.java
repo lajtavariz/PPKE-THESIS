@@ -45,6 +45,7 @@ public class CacheConfiguration {
             cm.createCache(hu.ppke.yeast.domain.PersistentToken.class.getName(), jcacheConfiguration);
             cm.createCache(hu.ppke.yeast.domain.User.class.getName() + ".persistentTokens", jcacheConfiguration);
             cm.createCache(hu.ppke.yeast.domain.Document.class.getName(), jcacheConfiguration);
+            cm.createCache(hu.ppke.yeast.domain.Index.class.getName(), jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
         };
     }
