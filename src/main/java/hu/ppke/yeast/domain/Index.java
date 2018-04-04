@@ -4,16 +4,17 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Index.
  */
 @Entity
-@Table(name = "index")
+@Table(name = "jhi_index")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Index implements Serializable {
 
@@ -30,6 +31,9 @@ public class Index implements Serializable {
     @Min(value = 0L)
     @Column(name = "total_count")
     private Long total_count;
+
+    @OneToMany(mappedBy = "index")
+    private Set<DocumentIndex> documentIndices;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -65,6 +69,11 @@ public class Index implements Serializable {
     public void setTotal_count(Long total_count) {
         this.total_count = total_count;
     }
+
+    public Set<DocumentIndex> getDocumentIndices() {
+        return documentIndices;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override

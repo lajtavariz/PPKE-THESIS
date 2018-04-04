@@ -1,0 +1,39 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "document",
+            "otherEntityName": "document",
+            "relationshipType": "many-to-one",
+            "relationshipValidateRules": [
+                "required"
+            ],
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipName": "index",
+            "otherEntityName": "index",
+            "relationshipType": "many-to-one",
+            "relationshipValidateRules": [
+                "required"
+            ],
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "weight",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "count",
+            "fieldType": "Long"
+        }
+    ],
+    "changelogDate": "20180404153142",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "document_index",
+    "jpaMetamodelFiltering": false,
+    "pagination": "no"
+}

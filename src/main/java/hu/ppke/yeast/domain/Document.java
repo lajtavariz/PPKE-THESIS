@@ -4,11 +4,11 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Document.
@@ -30,6 +30,9 @@ public class Document implements Serializable {
 
     @Column(name = "content")
     private String content;
+
+    @OneToMany(mappedBy = "document")
+    private Set<DocumentIndex> documentIndices;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -65,6 +68,11 @@ public class Document implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public Set<DocumentIndex> getDocumentIndices() {
+        return documentIndices;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
