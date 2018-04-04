@@ -1,0 +1,23 @@
+{
+    "fluentMethods": true,
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "creation_date",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "content",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20180403163410",
+    "dto": "mapstruct",
+    "service": "serviceImpl",
+    "entityTableName": "document",
+    "jpaMetamodelFiltering": false,
+    "pagination": "pagination"
+}

@@ -1,0 +1,46 @@
+<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+
+    <div class="modal-header">
+        <h4 class="modal-title" id="myDocumentLabel">Create or edit a Document</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                (click)="clear()">&times;</button>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" [hidden]="!document.id">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                   [(ngModel)]="document.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_creation_date">Creation Date</label>
+            <div class="input-group">
+                <input id="field_creation_date" type="text" class="form-control" name="creation_date" ngbDatepicker  #creation_dateDp="ngbDatepicker" [(ngModel)]="document.creation_date"
+                required/>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-secondary" (click)="creation_dateDp.toggle()"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+            <div [hidden]="!(editForm.controls.creation_date?.dirty && editForm.controls.creation_date?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.creation_date?.errors?.required">
+                   This field is required.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_content">Content</label>
+            <input type="text" class="form-control" name="content" id="field_content"
+                [(ngModel)]="document.content" />
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="clear()">
+            <span class="fa fa-ban"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+            <span class="fa fa-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>
