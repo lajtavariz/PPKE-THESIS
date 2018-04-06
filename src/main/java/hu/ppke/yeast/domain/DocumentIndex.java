@@ -39,23 +39,16 @@ public class DocumentIndex implements Serializable {
     private Index index;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public DocumentIndex weight(Double weight) {
+    public DocumentIndex setWeight(Double weight) {
         this.weight = weight;
         return this;
     }
@@ -64,11 +57,7 @@ public class DocumentIndex implements Serializable {
         return count;
     }
 
-    public void setCount(Long count) {
-        this.count = count;
-    }
-
-    public DocumentIndex count(Long count) {
+    public DocumentIndex setCount(Long count) {
         this.count = count;
         return this;
     }
@@ -77,11 +66,7 @@ public class DocumentIndex implements Serializable {
         return document;
     }
 
-    public void setDocument(Document document) {
-        this.document = document;
-    }
-
-    public DocumentIndex document(Document document) {
+    public DocumentIndex setDocument(Document document) {
         this.document = document;
         return this;
     }
@@ -90,14 +75,11 @@ public class DocumentIndex implements Serializable {
         return index;
     }
 
-    public void setIndex(Index index) {
-        this.index = index;
-    }
-
-    public DocumentIndex index(Index index) {
+    public DocumentIndex setIndex(Index index) {
         this.index = index;
         return this;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override

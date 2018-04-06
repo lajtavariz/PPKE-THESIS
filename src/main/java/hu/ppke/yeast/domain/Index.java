@@ -49,26 +49,18 @@ public class Index implements Serializable {
         return name;
     }
 
-    public Index name(String name) {
+    public Index setName(String name) {
         this.name = name;
         return this;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Long getTotal_count() {
         return total_count;
     }
 
-    public Index total_count(Long total_count) {
+    public Index setTotal_count(Long total_count) {
         this.total_count = total_count;
         return this;
-    }
-
-    public void setTotal_count(Long total_count) {
-        this.total_count = total_count;
     }
 
     public Set<DocumentIndex> getDocumentIndices() {

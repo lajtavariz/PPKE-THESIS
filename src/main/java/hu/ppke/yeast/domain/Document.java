@@ -48,26 +48,18 @@ public class Document implements Serializable {
         return creation_date;
     }
 
-    public Document creation_date(LocalDate creation_date) {
+    public Document setCreation_date(LocalDate creation_date) {
         this.creation_date = creation_date;
         return this;
-    }
-
-    public void setCreation_date(LocalDate creation_date) {
-        this.creation_date = creation_date;
     }
 
     public String getContent() {
         return content;
     }
 
-    public Document content(String content) {
+    public Document setContent(String content) {
         this.content = content;
         return this;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public Set<DocumentIndex> getDocumentIndices() {
