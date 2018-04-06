@@ -1,14 +1,12 @@
 package hu.ppke.yeast.web.rest;
 
 import hu.ppke.yeast.YeastApp;
-
 import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.dto.DocumentDTO;
 import hu.ppke.yeast.service.mapper.DocumentMapper;
 import hu.ppke.yeast.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,8 +91,8 @@ public class DocumentResourceIntTest {
      */
     public static Document createEntity(EntityManager em) {
         Document document = new Document()
-            .creation_date(DEFAULT_CREATION_DATE)
-            .content(DEFAULT_CONTENT);
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(DEFAULT_CONTENT);
         return document;
     }
 
@@ -212,8 +210,8 @@ public class DocumentResourceIntTest {
         // Disconnect from session so that the updates on updatedDocument are not directly saved in db
         em.detach(updatedDocument);
         updatedDocument
-            .creation_date(UPDATED_CREATION_DATE)
-            .content(UPDATED_CONTENT);
+            .setCreation_date(UPDATED_CREATION_DATE)
+            .setContent(UPDATED_CONTENT);
         DocumentDTO documentDTO = documentMapper.toDto(updatedDocument);
 
         restDocumentMockMvc.perform(put("/api/documents")
