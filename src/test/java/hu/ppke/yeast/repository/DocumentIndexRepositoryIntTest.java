@@ -5,7 +5,6 @@ import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.domain.DocumentIndex;
 import hu.ppke.yeast.domain.Index;
 import hu.ppke.yeast.web.rest.util.RandomString;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -46,48 +45,36 @@ public class DocumentIndexRepositoryIntTest {
     @Autowired
     DocumentIndexRepository docIndexRepository;
 
-
-    @Before
-    public void initTest() {
-
-
-    }
-
-
-
     @Test
     @Transactional
-    public void test1() {
-        Document document = new Document();
-        document.setCreation_date(LocalDate.now());
-        document.setContent("blabal");
-
-        Index index = new Index();
-        index.setName("bla");
-        index.setTotal_count(1L);
-
-        DocumentIndex documentIndex = new DocumentIndex();
-        documentIndex.setDocument(document);
-        documentIndex.setIndex(index);
-        documentIndex.setCount(1L);
-        documentIndex.setWeight(0.5);
+    public void persistOneDocAndCorrespondingIndex_cascadingWorks() {
+        Document document = generateDocument();
+        Index index = generateIndex();
+        DocumentIndex documentIndex = generateDocumentIndex(document, index);
 
         document.getDocumentIndices().add(documentIndex);
         index.getDocumentIndices().add(documentIndex);
 
-        Index persistedIndex = indexRepository.saveAndFlush(index);
-        Document persistedDocument = documentRepository.saveAndFlush(document);
+        indexRepository.saveAndFlush(index);
+        documentRepository.saveAndFlush(document);
         docIndexRepository.saveAndFlush(documentIndex);
 
         List<Document> persistedDocuments = documentRepository.findAll();
-        assertThat(persistedDocuments).containsOnly(persistedDocument);
+        assertThat(persistedDocuments).containsOnly(document);
 
         List<Index> persistedIndices = indexRepository.findAll();
-        assertThat(persistedIndices).containsOnly(persistedIndex);
+        assertThat(persistedIndices).containsOnly(index);
 
         List<DocumentIndex> documentIndices = docIndexRepository.findAll();
-        assertThat(documentIndices).hasSize(1);
+        assertThat(documentIndices).containsOnly(documentIndex);
 
+        List<DocumentIndex> documentIndicesForDocument = new ArrayList<>(document.getDocumentIndices());
+        assertThat(documentIndicesForDocument).containsOnly(documentIndex);
+        assertThat(documentIndicesForDocument.get(0).getIndex()).isEqualTo(index);
+
+        List<DocumentIndex> documentIndicesForIndex = new ArrayList<>(index.getDocumentIndices());
+        assertThat(documentIndicesForIndex).containsOnly(documentIndex);
+        assertThat(documentIndicesForIndex.get(0).getDocument()).isEqualTo(document);
     }
 
     @Test
