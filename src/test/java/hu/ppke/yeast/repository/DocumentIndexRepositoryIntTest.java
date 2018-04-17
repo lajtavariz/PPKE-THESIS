@@ -166,7 +166,6 @@ public class DocumentIndexRepositoryIntTest {
         }
     }
 
-
     private Index generateIndex() {
         return new Index().setName(new RandomString(5).nextString());
     }
