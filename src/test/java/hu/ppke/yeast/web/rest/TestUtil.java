@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
@@ -22,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TestUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
+
     /** MediaType for JSON UTF8 */
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
             MediaType.APPLICATION_JSON.getType(),
@@ -37,13 +41,31 @@ public class TestUtil {
      */
     public static byte[] convertObjectToJsonBytes(Object object)
             throws IOException {
+        ObjectMapper mapper = generateMapper();
+
+        return mapper.writeValueAsBytes(object);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T convertJsonStringToObject(T dto, String json) {
+        ObjectMapper mapper = generateMapper();
+        try {
+            T returnObject = (T) mapper.readValue(json, dto.getClass());
+            return returnObject;
+        } catch (Exception exc) {
+            log.error("An exception has occured while parsing the json string", exc);
+            return null;
+        }
+    }
+
+    private static ObjectMapper generateMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         JavaTimeModule module = new JavaTimeModule();
         mapper.registerModule(module);
 
-        return mapper.writeValueAsBytes(object);
+        return mapper;
     }
 
     /**

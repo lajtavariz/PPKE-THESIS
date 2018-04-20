@@ -1,6 +1,7 @@
 package hu.ppke.yeast.service.impl;
 
 import hu.ppke.yeast.domain.Document;
+import hu.ppke.yeast.processor.DocumentProcessor;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.dto.DocumentDTO;
@@ -24,13 +25,16 @@ public class DocumentServiceImpl implements DocumentService {
     private final Logger log = LoggerFactory.getLogger(DocumentServiceImpl.class);
 
     private final DocumentRepository documentRepository;
-
     private final DocumentMapper documentMapper;
+    private final DocumentProcessor documentProcessor;
 
     @Autowired
-    public DocumentServiceImpl(DocumentRepository documentRepository, DocumentMapper documentMapper) {
+    public DocumentServiceImpl(DocumentRepository documentRepository,
+                               DocumentMapper documentMapper,
+                               DocumentProcessor documentProcessor) {
         this.documentRepository = documentRepository;
         this.documentMapper = documentMapper;
+        this.documentProcessor = documentProcessor;
     }
 
     /**
@@ -44,6 +48,8 @@ public class DocumentServiceImpl implements DocumentService {
         log.debug("Request to save Document : {}", documentDTO);
         Document document = documentMapper.toEntity(documentDTO);
         document = documentRepository.save(document);
+        documentProcessor.processDocument(document);
+
         return documentMapper.toDto(document);
     }
 

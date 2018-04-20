@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DocumentProcessorTest {
 
-    private final String sampleText1 = "Among going{} [manor; who did.1 Do ye is -@celebrated it> sympathize, 8considered.";
+    private final String sampleText1 = "Among going{} [manor; who did.1 Do ye is -@celebrated it> sympathize, 8considered and considered.";
 
     @Autowired
     DocumentProcessor documentProcessor;

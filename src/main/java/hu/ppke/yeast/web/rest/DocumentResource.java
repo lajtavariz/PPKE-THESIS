@@ -2,13 +2,14 @@ package hu.ppke.yeast.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import hu.ppke.yeast.service.DocumentService;
+import hu.ppke.yeast.service.dto.DocumentDTO;
 import hu.ppke.yeast.web.rest.errors.BadRequestAlertException;
 import hu.ppke.yeast.web.rest.util.HeaderUtil;
 import hu.ppke.yeast.web.rest.util.PaginationUtil;
-import hu.ppke.yeast.service.dto.DocumentDTO;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +36,7 @@ public class DocumentResource {
 
     private final DocumentService documentService;
 
+    @Autowired
     public DocumentResource(DocumentService documentService) {
         this.documentService = documentService;
     }
@@ -55,6 +56,7 @@ public class DocumentResource {
             throw new BadRequestAlertException("A new document cannot already have an ID", ENTITY_NAME, "idexists");
         }
         DocumentDTO result = documentService.save(documentDTO);
+
         return ResponseEntity.created(new URI("/api/documents/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);

@@ -2,7 +2,10 @@ package hu.ppke.yeast.web.rest;
 
 import hu.ppke.yeast.YeastApp;
 import hu.ppke.yeast.domain.Document;
+import hu.ppke.yeast.domain.DocumentIndex;
+import hu.ppke.yeast.domain.Index;
 import hu.ppke.yeast.repository.DocumentRepository;
+import hu.ppke.yeast.repository.IndexRepository;
 import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.dto.DocumentDTO;
 import hu.ppke.yeast.service.mapper.DocumentMapper;
@@ -14,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,7 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static hu.ppke.yeast.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,9 +51,28 @@ public class DocumentResourceIntTest {
 
     private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
     private static final String UPDATED_CONTENT = "BBBBBBBBBB";
+    private static final String CONTENT1_FOR_TXT_PROCESSING = "The quick 8brown {fox} jumped over the lazy dog,999 then the dog and the fox eat the rabbit:).";
+    private static final String CONTENT2_FOR_TXT_PROCESSING = "Foxes are red and dogs are white";
+
+    private static final String QUICK = "quick";
+    private static final String BROWN = "brown";
+    private static final String FOX = "fox";
+    private static final String JUMP = "jump";
+    private static final String LAZI = "lazi";
+    private static final String DOG = "dog";
+    private static final String EAT = "eat";
+    private static final String RABBIT = "rabbit";
+    private static final String OVER = "over";
+    private static final String RED = "red";
+    private static final String WHITE = "white";
+    private static final List<String> INDICES_FOR_CONTENT1 = Arrays.asList(QUICK, BROWN, FOX, JUMP, LAZI, DOG, EAT, RABBIT, OVER);
+
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private IndexRepository indexRepository;
 
     @Autowired
     private DocumentMapper documentMapper;
@@ -107,11 +131,7 @@ public class DocumentResourceIntTest {
         int databaseSizeBeforeCreate = documentRepository.findAll().size();
 
         // Create the Document
-        DocumentDTO documentDTO = documentMapper.toDto(document);
-        restDocumentMockMvc.perform(post("/api/documents")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(documentDTO)))
-            .andExpect(status().isCreated());
+        doPostRequestAndValidateResponse(document, HttpStatus.CREATED);
 
         // Validate the Document in the database
         List<Document> documentList = documentRepository.findAll();
@@ -123,18 +143,110 @@ public class DocumentResourceIntTest {
 
     @Test
     @Transactional
+    public void createDocument_persistedIndicesAreOK() throws Exception {
+        // Create the Document
+        DocumentDTO responseDocumentDTO = doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT1_FOR_TXT_PROCESSING), HttpStatus.CREATED);
+
+        // Get the saved Document
+        Document persistedDocument = documentRepository.getOne(responseDocumentDTO.getId());
+
+        // Validate document indices
+        Set<DocumentIndex> documentIndices = persistedDocument.getDocumentIndices();
+        assertThat(documentIndices).hasSize(9);
+
+        validateDocumentIndices(documentIndices, INDICES_FOR_CONTENT1);
+    }
+
+    @Test
+    @Transactional
+    public void createDocuments_persistedIndicesAreOK() throws Exception {
+        int databaseSizeBeforeCreate = documentRepository.findAll().size();
+
+        // Create the Documents
+        DocumentDTO responseDocumentDTO1 = doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT1_FOR_TXT_PROCESSING), HttpStatus.CREATED);
+
+        DocumentDTO responseDocumentDTO2 = doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT2_FOR_TXT_PROCESSING), HttpStatus.CREATED);
+
+        // Validate the Document in the database
+        Document persistedDocument1 = documentRepository.getOne(responseDocumentDTO1.getId());
+        Document persistedDocument2 = documentRepository.getOne(responseDocumentDTO2.getId());
+
+        // Validate document indices for Document1
+        Set<DocumentIndex> documentIndices = persistedDocument1.getDocumentIndices();
+        assertThat(documentIndices).hasSize(9);
+        validateDocumentIndices(documentIndices, INDICES_FOR_CONTENT1);
+
+        validateDocumentIndexForIndex(documentIndices, DOG, 2L);
+        validateDocumentIndexForIndex(documentIndices, FOX, 2L);
+
+        // Validate document indices for Document2
+        documentIndices = persistedDocument2.getDocumentIndices();
+        assertThat(documentIndices).hasSize(4);
+        validateDocumentIndices(documentIndices, Arrays.asList(FOX, RED, DOG, WHITE));
+
+        validateDocumentIndexForIndex(documentIndices, DOG, 1L);
+        validateDocumentIndexForIndex(documentIndices, FOX, 1L);
+
+        // Validate all persisted indices
+        List<Index> allIndices = indexRepository.findAll();
+
+        Map<String, Long> indexNameToTotalCount = new HashMap<>();
+        indexNameToTotalCount.put(QUICK, 1L);
+        indexNameToTotalCount.put(BROWN, 1L);
+        indexNameToTotalCount.put(FOX, 3L);
+        indexNameToTotalCount.put(JUMP, 1L);
+        indexNameToTotalCount.put(OVER, 1L);
+        indexNameToTotalCount.put(LAZI, 1L);
+        indexNameToTotalCount.put(DOG, 3L);
+        indexNameToTotalCount.put(EAT, 1L);
+        indexNameToTotalCount.put(RABBIT, 1L);
+        indexNameToTotalCount.put(RED, 1L);
+        indexNameToTotalCount.put(WHITE, 1L);
+
+        validateAllIndices(allIndices, indexNameToTotalCount, 11);
+    }
+
+    private void validateDocumentIndices(Set<DocumentIndex> documentIndices, List<String> expectedIndices) {
+        assertThat(documentIndices).hasSize(expectedIndices.size());
+
+        for (String expectedIndex : expectedIndices) {
+            assertThat(documentIndices.stream().filter(p -> p
+                .getIndex()
+                .getName()
+                .equals(expectedIndex)).collect(Collectors.toList())).hasSize(1);
+        }
+    }
+
+    private void validateDocumentIndexForIndex(Set<DocumentIndex> documentIndices, String indexName, long expectedCount) {
+        Optional<DocumentIndex> docIndex = documentIndices.stream().filter(p -> p.getIndex().getName().equals(indexName)).findAny();
+        assertThat(docIndex.isPresent()).isTrue();
+        assertThat(docIndex.get().getCount()).isEqualTo(expectedCount);
+    }
+
+    private void validateAllIndices(List<Index> allIndices, Map<String, Long> indexNameToTotalCount, int expectedNrOfIndices) {
+        assertThat(allIndices).hasSize(expectedNrOfIndices);
+
+        for (Index index : allIndices) {
+            assertThat(index.getTotal_count()).isEqualTo(indexNameToTotalCount.get(index.getName()));
+        }
+    }
+
+    @Test
+    @Transactional
     public void createDocumentWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = documentRepository.findAll().size();
 
         // Create the Document with an existing ID
         document.setId(1L);
-        DocumentDTO documentDTO = documentMapper.toDto(document);
 
         // An entity with an existing ID cannot be created, so this API call must fail
-        restDocumentMockMvc.perform(post("/api/documents")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(documentDTO)))
-            .andExpect(status().isBadRequest());
+        doPostRequestAndValidateResponse(document, HttpStatus.BAD_REQUEST);
 
         // Validate the Document in the database
         List<Document> documentList = documentRepository.findAll();
@@ -148,13 +260,7 @@ public class DocumentResourceIntTest {
         // set the field null
         document.setCreation_date(null);
 
-        // Create the Document, which fails.
-        DocumentDTO documentDTO = documentMapper.toDto(document);
-
-        restDocumentMockMvc.perform(post("/api/documents")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(documentDTO)))
-            .andExpect(status().isBadRequest());
+        doPostRequestAndValidateResponse(document, HttpStatus.BAD_REQUEST);
 
         List<Document> documentList = documentRepository.findAll();
         assertThat(documentList).hasSize(databaseSizeBeforeTest);
@@ -299,5 +405,14 @@ public class DocumentResourceIntTest {
     public void testEntityFromId() {
         assertThat(documentMapper.fromId(42L).getId()).isEqualTo(42);
         assertThat(documentMapper.fromId(null)).isNull();
+    }
+
+    private DocumentDTO doPostRequestAndValidateResponse(Document document, HttpStatus expectedStatus) throws Exception {
+        String response = restDocumentMockMvc.perform(post("/api/documents")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(documentMapper.toDto(document))))
+            .andExpect(status().is(expectedStatus.value())).andReturn().getResponse().getContentAsString();
+
+        return TestUtil.convertJsonStringToObject(new DocumentDTO(), response);
     }
 }
