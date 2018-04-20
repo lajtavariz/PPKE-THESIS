@@ -4,6 +4,7 @@ import hu.ppke.yeast.YeastApp;
 import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.domain.DocumentIndex;
 import hu.ppke.yeast.domain.Index;
+import hu.ppke.yeast.service.DocumentIndexService;
 import hu.ppke.yeast.web.rest.util.RandomString;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,19 +46,16 @@ public class DocumentIndexRepositoryIntTest {
     @Autowired
     DocumentIndexRepository docIndexRepository;
 
+    @Autowired
+    DocumentIndexService docIndexService;
+
+
     @Test
     @Transactional
     public void persistOneDocAndCorrespondingIndex_cascadingWorks() {
-        Document document = generateDocument();
-        Index index = generateIndex();
-        DocumentIndex documentIndex = generateDocumentIndex(document, index);
-
-        document.getDocumentIndices().add(documentIndex);
-        index.getDocumentIndices().add(documentIndex);
-
-        indexRepository.saveAndFlush(index);
-        documentRepository.saveAndFlush(document);
-        docIndexRepository.saveAndFlush(documentIndex);
+        Document document = documentRepository.saveAndFlush(generateDocument());
+        Index index = indexRepository.saveAndFlush(generateIndex());
+        DocumentIndex documentIndex = docIndexService.save(document, index, 1);
 
         List<Document> persistedDocuments = documentRepository.findAll();
         assertThat(persistedDocuments).containsOnly(document);
@@ -144,7 +142,6 @@ public class DocumentIndexRepositoryIntTest {
             log.info("Persisting document nr. " + (j + 1) + "/" + nrOfDocuments + " and related indices...");
             Document document = documentRepository.saveAndFlush(generateDocument());
 
-            List<DocumentIndex> documentIndices = new ArrayList<>();
             for (int k = 0; k < nrOfIndicesForDocument; k++) {
                 Index index;
 
@@ -154,14 +151,8 @@ public class DocumentIndexRepositoryIntTest {
                     index = indexRepository.saveAndFlush(generateIndex());
                 }
 
-                documentIndices.add(generateDocumentIndex(document, index));
+                docIndexService.save(document, index, 1);
 
-                DocumentIndex documentIndex = docIndexRepository.saveAndFlush(generateDocumentIndex(document, index));
-
-                document.getDocumentIndices().add(documentIndex);
-                index.getDocumentIndices().add(documentIndex);
-                documentRepository.saveAndFlush(document);
-                indexRepository.saveAndFlush(index);
             }
         }
     }
@@ -172,9 +163,5 @@ public class DocumentIndexRepositoryIntTest {
 
     private Document generateDocument() {
         return new Document().setContent(new RandomString(100).nextString()).setCreation_date(LocalDate.now());
-    }
-
-    private DocumentIndex generateDocumentIndex(Document document, Index index) {
-        return new DocumentIndex().setDocument(document).setIndex(index).setWeight(0.5).setCount(1L);
     }
 }

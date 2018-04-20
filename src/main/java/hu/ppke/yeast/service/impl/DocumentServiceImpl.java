@@ -1,12 +1,13 @@
 package hu.ppke.yeast.service.impl;
 
-import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.repository.DocumentRepository;
+import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.dto.DocumentDTO;
 import hu.ppke.yeast.service.mapper.DocumentMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentMapper documentMapper;
 
+    @Autowired
     public DocumentServiceImpl(DocumentRepository documentRepository, DocumentMapper documentMapper) {
         this.documentRepository = documentRepository;
         this.documentMapper = documentMapper;

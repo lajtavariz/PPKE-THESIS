@@ -20,7 +20,7 @@ public class DocumentProcessorTest {
 
     @Test
     public void getWords_returnsOnlyTheWordsFromString() throws Exception {
-        System.out.println(documentProcessor.processDocument(sampleText1));
+        //System.out.println(documentProcessor.processDocument(sampleText1));
     }
 
 

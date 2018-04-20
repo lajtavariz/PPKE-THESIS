@@ -1,9 +1,8 @@
 package hu.ppke.yeast.repository;
 
 import hu.ppke.yeast.domain.Index;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import org.springframework.data.jpa.repository.*;
 
 
 /**
@@ -12,5 +11,7 @@ import org.springframework.data.jpa.repository.*;
 @SuppressWarnings("unused")
 @Repository
 public interface IndexRepository extends JpaRepository<Index, Long> {
+
+    Index findByName(String name);
 
 }
