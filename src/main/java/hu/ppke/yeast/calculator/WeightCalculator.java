@@ -39,29 +39,33 @@ public class WeightCalculator {
         this.documentIndexWeightRepository = documentIndexWeightRepository;
     }
 
-    public void generateWeightMatrix() {
+    public void calculateWeights() {
 
         final List<Document> allDocuments = documentRepository.findAll();
         final List<Index> allIndices = indexRepository.findAll();
+        documentIndexWeightRepository.deleteAll();
         nrOfAllDocuments = allDocuments.size();
 
         for (Document currentDoc : allDocuments) {
 
+            log.debug("Generating weights for Document " + currentDoc.getId());
+
             final List<DocumentIndex> documentIndices = new ArrayList<>(currentDoc.getDocumentIndices());
-            calculateWeightsForOwnIndices(documentIndices);
+            persistWeightsForOwnIndices(documentIndices);
 
             final List<Index> otherIndices = getOtherIndices(documentIndices, allIndices);
-            calculateWeightsForOtherIndices(otherIndices, currentDoc.getId());
+            persistWeightsForOtherIndices(otherIndices, currentDoc.getId());
         }
     }
 
-    private void calculateWeightsForOwnIndices(final List<DocumentIndex> documentIndices) {
+    private void persistWeightsForOwnIndices(final List<DocumentIndex> documentIndices) {
 
         for (DocumentIndex documentIndex : documentIndices) {
+            double weight = calculateWeight(TF_IDF, documentIndex);
             documentIndexWeightRepository.saveAndFlush(new DocumentIndexWeight()
                 .setDocumentId(documentIndex.getDocument().getId())
                 .setIndexId(documentIndex.getIndex().getId()))
-                .setWeight(calculateWeight(TF_IDF, documentIndex));
+                .setWeight(weight);
         }
     }
 
@@ -75,7 +79,7 @@ public class WeightCalculator {
         return (List<Index>) CollectionUtils.removeAll(allIndices, indicesForDoc);
     }
 
-    private void calculateWeightsForOtherIndices(final List<Index> otherIndices, Long documentId) {
+    private void persistWeightsForOtherIndices(final List<Index> otherIndices, Long documentId) {
 
         for (Index currentIndex : otherIndices) {
             documentIndexWeightRepository.saveAndFlush(new DocumentIndexWeight()

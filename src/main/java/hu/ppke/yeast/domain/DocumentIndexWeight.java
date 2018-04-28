@@ -30,7 +30,6 @@ public class DocumentIndexWeight implements Serializable {
     @Column(name = "index_id")
     private Long indexId;
 
-    @NotNull
     @Column(name = "weight")
     private Double weight;
 
