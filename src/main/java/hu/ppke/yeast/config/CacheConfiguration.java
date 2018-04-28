@@ -47,6 +47,7 @@ public class CacheConfiguration {
             cm.createCache(hu.ppke.yeast.domain.Document.class.getName(), jcacheConfiguration);
             cm.createCache(hu.ppke.yeast.domain.Index.class.getName(), jcacheConfiguration);
             cm.createCache(hu.ppke.yeast.domain.DocumentIndex.class.getName(), jcacheConfiguration);
+            cm.createCache(hu.ppke.yeast.domain.DocumentIndexWeight.class.getName(), jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
         };
     }
