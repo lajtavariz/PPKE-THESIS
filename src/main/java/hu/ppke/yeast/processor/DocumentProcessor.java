@@ -90,7 +90,7 @@ public class DocumentProcessor {
             Index index;
             index = indexRepository.findByName(key);
             if (index == null) {
-                index = indexRepository.save(new Index().setName(key).setDocumentCount(0L));
+                index = indexRepository.save(new Index().setName(key).setDocumentCount(1L));
             } else {
                 index.setDocumentCount(index.getDocumentCount() + 1);
             }

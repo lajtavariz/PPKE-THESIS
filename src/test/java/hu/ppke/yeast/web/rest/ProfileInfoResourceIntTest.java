@@ -1,7 +1,7 @@
 package hu.ppke.yeast.web.rest;
 
-import io.github.jhipster.config.JHipsterProperties;
 import hu.ppke.yeast.YeastApp;
+import io.github.jhipster.config.JHipsterProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,7 @@ public class ProfileInfoResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        String mockProfile[] = { "test" };
+        String mockProfile[] = {"test"};
         JHipsterProperties.Ribbon ribbon = new JHipsterProperties.Ribbon();
         ribbon.setDisplayOnActiveProfiles(mockProfile);
         when(jHipsterProperties.getRibbon()).thenReturn(ribbon);

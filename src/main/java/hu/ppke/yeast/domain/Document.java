@@ -29,6 +29,7 @@ public class Document implements Serializable {
     @Column(name = "creation_date", nullable = false)
     private LocalDate creation_date;
 
+    @Lob
     @Column(name = "content")
     private String content;
 

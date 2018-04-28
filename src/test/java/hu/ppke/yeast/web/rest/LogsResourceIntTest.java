@@ -1,9 +1,9 @@
 package hu.ppke.yeast.web.rest;
 
-import hu.ppke.yeast.YeastApp;
-import hu.ppke.yeast.web.rest.vm.LoggerVM;
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.LoggerContext;
+import hu.ppke.yeast.YeastApp;
+import hu.ppke.yeast.web.rest.vm.LoggerVM;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,14 +43,14 @@ public class LogsResourceIntTest {
     }
 
     @Test
-    public void getAllLogs()throws Exception {
+    public void getAllLogs() throws Exception {
         restLogsMockMvc.perform(get("/management/logs"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE));
     }
 
     @Test
-    public void changeLogs()throws Exception {
+    public void changeLogs() throws Exception {
         LoggerVM logger = new LoggerVM();
         logger.setLevel("INFO");
         logger.setName("ROOT");

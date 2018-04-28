@@ -1,7 +1,6 @@
 package hu.ppke.yeast.web.rest;
 
 import hu.ppke.yeast.YeastApp;
-import hu.ppke.yeast.config.CacheConfiguration;
 import hu.ppke.yeast.domain.Authority;
 import hu.ppke.yeast.domain.User;
 import hu.ppke.yeast.repository.UserRepository;
@@ -30,11 +29,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -116,7 +118,7 @@ public class UserResourceIntTest {
 
     /**
      * Create a User.
-     *
+     * <p>
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which has a required relationship to the User entity.
      */

@@ -109,7 +109,7 @@ public class DocumentResourceIntTest {
 
     /**
      * Create an entity for this test.
-     *
+     * <p>
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
@@ -199,11 +199,11 @@ public class DocumentResourceIntTest {
         Map<String, Long> indexNameToTotalCount = new HashMap<>();
         indexNameToTotalCount.put(QUICK, 1L);
         indexNameToTotalCount.put(BROWN, 1L);
-        indexNameToTotalCount.put(FOX, 3L);
+        indexNameToTotalCount.put(FOX, 2L);
         indexNameToTotalCount.put(JUMP, 1L);
         indexNameToTotalCount.put(OVER, 1L);
         indexNameToTotalCount.put(LAZI, 1L);
-        indexNameToTotalCount.put(DOG, 3L);
+        indexNameToTotalCount.put(DOG, 2L);
         indexNameToTotalCount.put(EAT, 1L);
         indexNameToTotalCount.put(RABBIT, 1L);
         indexNameToTotalCount.put(RED, 1L);
