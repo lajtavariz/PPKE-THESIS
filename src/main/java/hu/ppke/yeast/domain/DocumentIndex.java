@@ -22,9 +22,6 @@ public class DocumentIndex implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "weight")
-    private Double weight;
-
     @Column(name = "count")
     private Long count;
 
@@ -42,15 +39,6 @@ public class DocumentIndex implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public DocumentIndex setWeight(Double weight) {
-        this.weight = weight;
-        return this;
     }
 
     public Long getCount() {
@@ -106,7 +94,6 @@ public class DocumentIndex implements Serializable {
     public String toString() {
         return "DocumentIndex{" +
             "id=" + getId() +
-            ", weight=" + getWeight() +
             ", count=" + getCount() +
             "}";
     }

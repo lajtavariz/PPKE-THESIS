@@ -30,8 +30,8 @@ public class Index implements Serializable {
     private String name;
 
     @Min(value = 0L)
-    @Column(name = "total_count")
-    private Long total_count;
+    @Column(name = "document_count")
+    private Long documentCount;
 
     @OneToMany(mappedBy = "index")
     private Set<DocumentIndex> documentIndices = new HashSet<>();
@@ -54,12 +54,12 @@ public class Index implements Serializable {
         return this;
     }
 
-    public Long getTotal_count() {
-        return total_count;
+    public Long getDocumentCount() {
+        return documentCount;
     }
 
-    public Index setTotal_count(Long total_count) {
-        this.total_count = total_count;
+    public Index setDocumentCount(Long documentCount) {
+        this.documentCount = documentCount;
         return this;
     }
 
@@ -98,7 +98,7 @@ public class Index implements Serializable {
         return "Index{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", total_count=" + getTotal_count() +
+            ", documentCount=" + getDocumentCount() +
             "}";
     }
 }

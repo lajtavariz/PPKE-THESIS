@@ -69,9 +69,8 @@ public class DocumentProcessor {
         return Arrays.asList(words);
     }
 
-    // exclude those words which are on the stoplist
     private List<String> filterWords(List<String> words) {
-
+        // exclude those words which are on the stoplist
         return words.stream().filter(w -> !stopWords.contains(w)).collect(Collectors.toList());
     }
 
@@ -91,10 +90,10 @@ public class DocumentProcessor {
             Index index;
             index = indexRepository.findByName(key);
             if (index == null) {
-                index = indexRepository.save(new Index().setName(key).setTotal_count(0L));
+                index = indexRepository.save(new Index().setName(key).setDocumentCount(0L));
             }
             int freq = Collections.frequency(rawIndeces, key);
-            index.setTotal_count(index.getTotal_count() + freq);
+            index.setDocumentCount(index.getDocumentCount() + freq);
 
 
             docIndexService.save(document, index, freq);

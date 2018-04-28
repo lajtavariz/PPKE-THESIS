@@ -15,7 +15,7 @@
     <!--
         Added the entity Index.
     -->
-    <changeSet id="20180404143319-1" author="jhipster">
+    <changeSet id="20180404143319-2" author="jhipster">
         <createTable tableName="jhi_index">
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
@@ -24,7 +24,7 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="total_count" type="bigint">
+            <column name="document_count" type="bigint">
                 <constraints nullable="true" />
             </column>
 

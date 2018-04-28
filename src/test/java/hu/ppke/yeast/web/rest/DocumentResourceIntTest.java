@@ -233,7 +233,7 @@ public class DocumentResourceIntTest {
         assertThat(allIndices).hasSize(expectedNrOfIndices);
 
         for (Index index : allIndices) {
-            assertThat(index.getTotal_count()).isEqualTo(indexNameToTotalCount.get(index.getName()));
+            assertThat(index.getDocumentCount()).isEqualTo(indexNameToTotalCount.get(index.getName()));
         }
     }
 

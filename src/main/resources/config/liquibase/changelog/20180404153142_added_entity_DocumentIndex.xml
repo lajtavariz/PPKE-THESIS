@@ -15,13 +15,10 @@
     <!--
         Added the entity DocumentIndex.
     -->
-    <changeSet id="20180404153142-1" author="jhipster">
+    <changeSet id="20180404153142-2" author="jhipster">
         <createTable tableName="document_index">
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="weight" type="double">
-                <constraints nullable="true"/>
             </column>
 
             <column name="count" type="bigint">
