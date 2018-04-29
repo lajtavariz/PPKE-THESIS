@@ -1,7 +1,7 @@
 package hu.ppke.yeast.service.impl;
 
-import hu.ppke.yeast.calculator.WeightCalculator;
 import hu.ppke.yeast.domain.Document;
+import hu.ppke.yeast.generator.WeightMatrixGenerator;
 import hu.ppke.yeast.processor.DocumentProcessor;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.service.DocumentService;
@@ -30,17 +30,17 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentMapper documentMapper;
     private final DocumentProcessor documentProcessor;
-    private final WeightCalculator weightCalculator;
+    private final WeightMatrixGenerator weightMatrixGenerator;
 
     @Autowired
     public DocumentServiceImpl(DocumentRepository documentRepository,
                                DocumentMapper documentMapper,
                                DocumentProcessor documentProcessor,
-                               WeightCalculator weightCalculator) {
+                               WeightMatrixGenerator weightMatrixGenerator) {
         this.documentRepository = documentRepository;
         this.documentMapper = documentMapper;
         this.documentProcessor = documentProcessor;
-        this.weightCalculator = weightCalculator;
+        this.weightMatrixGenerator = weightMatrixGenerator;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = documentMapper.toEntity(documentDTO);
         document = documentRepository.save(document);
         documentProcessor.processDocument(document);
-        weightCalculator.calculateAndPersistWeights();
+        weightMatrixGenerator.calculateAndPersistWeights();
 
         return documentMapper.toDto(document);
     }

@@ -1,6 +1,7 @@
 package hu.ppke.yeast.processor;
 
 import com.opencsv.CSVReaderBuilder;
+import hu.ppke.yeast.repository.IndexRepository;
 import opennlp.tools.stemmer.PorterStemmer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +20,14 @@ public abstract class AbstractProcessor {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final ResourceLoader resourceLoader;
+    protected final IndexRepository indexRepository;
 
     private List<String> stopWords;
 
     @Autowired
-    public AbstractProcessor(ResourceLoader resourceLoader) {
+    public AbstractProcessor(ResourceLoader resourceLoader, IndexRepository indexRepository) {
         this.resourceLoader = resourceLoader;
+        this.indexRepository = indexRepository;
     }
 
     @PostConstruct

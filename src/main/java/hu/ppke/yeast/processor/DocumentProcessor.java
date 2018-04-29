@@ -23,15 +23,14 @@ import java.util.Set;
 @Component
 public class DocumentProcessor extends AbstractProcessor {
 
-    private final IndexRepository indexRepository;
+
     private final DocumentIndexService docIndexService;
 
     @Autowired
     public DocumentProcessor(ResourceLoader resourceLoader,
                              IndexRepository indexRepository,
                              DocumentIndexService docIndexService) {
-        super(resourceLoader);
-        this.indexRepository = indexRepository;
+        super(resourceLoader, indexRepository);
         this.docIndexService = docIndexService;
     }
 
