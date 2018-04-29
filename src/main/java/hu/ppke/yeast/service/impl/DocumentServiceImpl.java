@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 /**
  * Service Implementation for managing Document.
@@ -41,12 +43,6 @@ public class DocumentServiceImpl implements DocumentService {
         this.weightCalculator = weightCalculator;
     }
 
-    /**
-     * Save a document.
-     *
-     * @param documentDTO the entity to save
-     * @return the persisted entity
-     */
     @Override
     public DocumentDTO save(DocumentDTO documentDTO) {
         log.debug("Request to save Document : {}", documentDTO);
@@ -58,12 +54,6 @@ public class DocumentServiceImpl implements DocumentService {
         return documentMapper.toDto(document);
     }
 
-    /**
-     * Get all the documents.
-     *
-     * @param pageable the pagination information
-     * @return the list of entities
-     */
     @Override
     @Transactional(readOnly = true)
     public Page<DocumentDTO> findAll(Pageable pageable) {
@@ -72,12 +62,6 @@ public class DocumentServiceImpl implements DocumentService {
             .map(documentMapper::toDto);
     }
 
-    /**
-     * Get one document by id.
-     *
-     * @param id the id of the entity
-     * @return the entity
-     */
     @Override
     @Transactional(readOnly = true)
     public DocumentDTO findOne(Long id) {
@@ -86,11 +70,11 @@ public class DocumentServiceImpl implements DocumentService {
         return documentMapper.toDto(document);
     }
 
-    /**
-     * Delete the document by id.
-     *
-     * @param id the id of the entity
-     */
+    @Override
+    public List<DocumentDTO> search(String query, int metric) {
+        return null;
+    }
+
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Document : {}", id);

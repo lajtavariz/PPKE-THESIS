@@ -4,6 +4,8 @@ import hu.ppke.yeast.service.dto.DocumentDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Service Interface for managing Document.
  */
@@ -32,6 +34,15 @@ public interface DocumentService {
      * @return the entity
      */
     DocumentDTO findOne(Long id);
+
+    /**
+     * Get the documents relevant to the query.
+     *
+     * @param query  the search query
+     * @param metric the chosen metric
+     * @return the list of entities
+     */
+    List<DocumentDTO> search(String query, int metric);
 
     /**
      * Delete the "id" document.

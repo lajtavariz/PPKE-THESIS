@@ -114,6 +114,24 @@ public class DocumentResource {
     }
 
     /**
+     * GET  /documents/?query=searchquery&metric=x : get all the documents which are relevant to the search query
+     * using a specified metric
+     *
+     * @param query  the search query
+     * @param metric the chosen metric
+     * @return the ResponseEntity with status 200 (OK) and the list of relevant documents in body
+     */
+    @RequestMapping(value = "/documents/search", method = RequestMethod.GET)
+    @Timed
+    public ResponseEntity<List<DocumentDTO>> getDocuments(@RequestParam String query, @RequestParam int metric) {
+        log.debug("REST request to get a list of documents which are relevant for the query " + query);
+        List<DocumentDTO> documentDTOS = documentService.search(query, metric);
+
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
      * DELETE  /documents/:id : delete the "id" document.
      *
      * @param id the id of the documentDTO to delete
