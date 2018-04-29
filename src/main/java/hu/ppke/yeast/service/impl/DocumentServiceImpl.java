@@ -53,7 +53,7 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = documentMapper.toEntity(documentDTO);
         document = documentRepository.save(document);
         documentProcessor.processDocument(document);
-        weightCalculator.calculateWeights();
+        weightCalculator.calculateAndPersistWeights();
 
         return documentMapper.toDto(document);
     }

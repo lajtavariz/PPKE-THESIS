@@ -39,7 +39,7 @@ public class WeightCalculator {
         this.documentIndexWeightRepository = documentIndexWeightRepository;
     }
 
-    public void calculateWeights() {
+    public void calculateAndPersistWeights() {
 
         final List<Document> allDocuments = documentRepository.findAll();
         final List<Index> allIndices = indexRepository.findAll();
@@ -100,6 +100,6 @@ public class WeightCalculator {
 
     private double calculateTF_IDF(Long frequency, Long nrOfDocumentsInWhichTheIndexOccurs) {
 
-        return frequency * Math.log(nrOfAllDocuments / nrOfDocumentsInWhichTheIndexOccurs);
+        return frequency * Math.log10(nrOfAllDocuments / nrOfDocumentsInWhichTheIndexOccurs);
     }
 }

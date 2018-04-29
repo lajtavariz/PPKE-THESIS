@@ -3,7 +3,9 @@ package hu.ppke.yeast.web.rest;
 import hu.ppke.yeast.YeastApp;
 import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.domain.DocumentIndex;
+import hu.ppke.yeast.domain.DocumentIndexWeight;
 import hu.ppke.yeast.domain.Index;
+import hu.ppke.yeast.repository.DocumentIndexWeightRepository;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.repository.IndexRepository;
 import hu.ppke.yeast.service.DocumentService;
@@ -32,6 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static hu.ppke.yeast.web.rest.TestUtil.createFormattingConversionService;
+import static hu.ppke.yeast.web.rest.util.RoundUtil.roundDouble;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -51,8 +54,8 @@ public class DocumentResourceIntTest {
 
     private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
     private static final String UPDATED_CONTENT = "BBBBBBBBBB";
-    private static final String CONTENT1_FOR_TXT_PROCESSING = "The quick 8brown {fox} jumped over the lazy dog,999 then the dog and the fox eat the rabbit:).";
-    private static final String CONTENT2_FOR_TXT_PROCESSING = "Foxes are red and dogs are white";
+    private static final String CONTENT1 = "The quick 8brown {fox} jumped over the lazy dog,999 then the dog and the fox eat the rabbit:).";
+    private static final String CONTENT2 = "Foxes are red and dogs are white";
 
     private static final String QUICK = "quick";
     private static final String BROWN = "brown";
@@ -67,12 +70,18 @@ public class DocumentResourceIntTest {
     private static final String WHITE = "white";
     private static final List<String> INDICES_FOR_CONTENT1 = Arrays.asList(QUICK, BROWN, FOX, JUMP, LAZI, DOG, EAT, RABBIT, OVER);
 
+    private static final List<Double> expectedWeightsForDoc1 = Arrays.asList(0.30103, 0.30103, 0.30103, 0.30103, 0.30103, 0.30103, 0.0, 0.0, 0.30103, 0.0, 0.0);
+    private static final List<Double> expectedWeightsForDoc2 = Arrays.asList(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.30103, 0.30103);
+
 
     @Autowired
     private DocumentRepository documentRepository;
 
     @Autowired
     private IndexRepository indexRepository;
+
+    @Autowired
+    private DocumentIndexWeightRepository documentIndexWeightRepository;
 
     @Autowired
     private DocumentMapper documentMapper;
@@ -147,7 +156,7 @@ public class DocumentResourceIntTest {
         // Create the Document
         DocumentDTO responseDocumentDTO = doPostRequestAndValidateResponse(new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
-            .setContent(CONTENT1_FOR_TXT_PROCESSING), HttpStatus.CREATED);
+            .setContent(CONTENT1), HttpStatus.CREATED);
 
         // Get the saved Document
         Document persistedDocument = documentRepository.getOne(responseDocumentDTO.getId());
@@ -162,16 +171,15 @@ public class DocumentResourceIntTest {
     @Test
     @Transactional
     public void createDocuments_persistedIndicesAreOK() throws Exception {
-        int databaseSizeBeforeCreate = documentRepository.findAll().size();
 
         // Create the Documents
         DocumentDTO responseDocumentDTO1 = doPostRequestAndValidateResponse(new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
-            .setContent(CONTENT1_FOR_TXT_PROCESSING), HttpStatus.CREATED);
+            .setContent(CONTENT1), HttpStatus.CREATED);
 
         DocumentDTO responseDocumentDTO2 = doPostRequestAndValidateResponse(new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
-            .setContent(CONTENT2_FOR_TXT_PROCESSING), HttpStatus.CREATED);
+            .setContent(CONTENT2), HttpStatus.CREATED);
 
         // Validate the Document in the database
         Document persistedDocument1 = documentRepository.getOne(responseDocumentDTO1.getId());
@@ -210,6 +218,8 @@ public class DocumentResourceIntTest {
         indexNameToTotalCount.put(WHITE, 1L);
 
         validateAllIndices(allIndices, indexNameToTotalCount, 11);
+
+        validateWeightMatrix(responseDocumentDTO1, responseDocumentDTO2, allIndices.size());
     }
 
     private void validateDocumentIndices(Set<DocumentIndex> documentIndices, List<String> expectedIndices) {
@@ -235,6 +245,22 @@ public class DocumentResourceIntTest {
         for (Index index : allIndices) {
             assertThat(index.getDocumentCount()).isEqualTo(indexNameToTotalCount.get(index.getName()));
         }
+    }
+
+    private void validateWeightMatrix(DocumentDTO documentDTO1, DocumentDTO documentDTO2, int nrOfAllIndices) {
+        List<Double> weightsForDoc1 = getWeightsForDoc(documentDTO1);
+        assertThat(weightsForDoc1).isEqualTo(expectedWeightsForDoc1);
+        assertThat(weightsForDoc1).hasSize(nrOfAllIndices);
+
+        List<Double> weightsForDoc2 = getWeightsForDoc(documentDTO2);
+        assertThat(weightsForDoc2).isEqualTo(expectedWeightsForDoc2);
+        assertThat(weightsForDoc2).hasSize(nrOfAllIndices);
+    }
+
+    private List<Double> getWeightsForDoc(DocumentDTO documentDTO) {
+        List<DocumentIndexWeight> docIndexWeights = documentIndexWeightRepository.findByDocumentIdOrderByIndexIdAsc(documentDTO.getId());
+
+        return docIndexWeights.stream().map(p -> roundDouble(p.getWeight())).collect(Collectors.toList());
     }
 
     @Test
