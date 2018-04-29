@@ -1,14 +1,13 @@
 package hu.ppke.yeast.service.dto;
 
-import hu.ppke.yeast.config.Constants;
-
+import hu.ppke.yeast.config.constants.Constants;
 import hu.ppke.yeast.domain.Authority;
 import hu.ppke.yeast.domain.User;
-
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,7 +1,6 @@
 package hu.ppke.yeast.security;
 
-import hu.ppke.yeast.config.Constants;
-
+import hu.ppke.yeast.config.constants.Constants;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
 

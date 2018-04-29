@@ -1,7 +1,7 @@
 package hu.ppke.yeast.web.rest;
 
 import hu.ppke.yeast.YeastApp;
-import hu.ppke.yeast.config.Constants;
+import hu.ppke.yeast.config.constants.Constants;
 import hu.ppke.yeast.domain.Authority;
 import hu.ppke.yeast.domain.PersistentToken;
 import hu.ppke.yeast.domain.User;

@@ -1,9 +1,8 @@
 package hu.ppke.yeast.repository;
 
-import hu.ppke.yeast.config.Constants;
 import hu.ppke.yeast.config.audit.AuditEventConverter;
+import hu.ppke.yeast.config.constants.Constants;
 import hu.ppke.yeast.domain.PersistentAuditEvent;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.audit.AuditEvent;

@@ -1,14 +1,13 @@
 package hu.ppke.yeast.service;
 
 import hu.ppke.yeast.YeastApp;
-import hu.ppke.yeast.config.Constants;
+import hu.ppke.yeast.config.constants.Constants;
 import hu.ppke.yeast.domain.PersistentToken;
 import hu.ppke.yeast.domain.User;
 import hu.ppke.yeast.repository.PersistentTokenRepository;
 import hu.ppke.yeast.repository.UserRepository;
 import hu.ppke.yeast.service.dto.UserDTO;
 import hu.ppke.yeast.service.util.RandomUtil;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 

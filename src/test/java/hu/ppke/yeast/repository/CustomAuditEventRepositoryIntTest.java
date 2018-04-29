@@ -1,8 +1,8 @@
 package hu.ppke.yeast.repository;
 
 import hu.ppke.yeast.YeastApp;
-import hu.ppke.yeast.config.Constants;
 import hu.ppke.yeast.config.audit.AuditEventConverter;
+import hu.ppke.yeast.config.constants.Constants;
 import hu.ppke.yeast.domain.PersistentAuditEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static hu.ppke.yeast.repository.CustomAuditEventRepository.EVENT_DATA_COLUMN_MAX_LENGTH;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test class for the CustomAuditEventRepository class.

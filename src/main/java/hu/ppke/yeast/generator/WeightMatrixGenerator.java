@@ -1,6 +1,5 @@
 package hu.ppke.yeast.generator;
 
-import hu.ppke.yeast.constants.WeightMethod;
 import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.domain.DocumentIndex;
 import hu.ppke.yeast.domain.DocumentIndexWeight;
@@ -18,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static hu.ppke.yeast.calculator.WeightCalculator.calculateTF_IDF;
-import static hu.ppke.yeast.constants.WeightMethod.TF_IDF;
+import static hu.ppke.yeast.calculator.WeightCalculator.calculateWeight;
+
 
 /**
  * This class is responsible for generating the weight for each possible Document-Index pair
@@ -64,7 +63,7 @@ public class WeightMatrixGenerator {
     private void persistWeightsForOwnIndices(final List<DocumentIndex> documentIndices) {
 
         for (DocumentIndex documentIndex : documentIndices) {
-            double weight = calculateWeight(TF_IDF, documentIndex);
+            double weight = calculateWeight(documentIndex.getCount(), nrOfAllDocuments, documentIndex.getIndex().getDocumentCount());
             documentIndexWeightRepository.saveAndFlush(new DocumentIndexWeight()
                 .setDocumentId(documentIndex.getDocument().getId())
                 .setIndexId(documentIndex.getIndex().getId()))
@@ -89,15 +88,6 @@ public class WeightMatrixGenerator {
                 .setDocumentId(documentId)
                 .setIndexId(currentIndex.getId()))
                 .setWeight(0.0);
-        }
-    }
-
-    private double calculateWeight(WeightMethod method, DocumentIndex documentIndex) {
-
-        if (TF_IDF.equals(method)) {
-            return calculateTF_IDF(documentIndex.getCount(), nrOfAllDocuments, documentIndex.getIndex().getDocumentCount());
-        } else {
-            throw new UnsupportedOperationException("Weight calculation for " + method + " is not yet supported!");
         }
     }
 }

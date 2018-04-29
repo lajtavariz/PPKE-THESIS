@@ -1,7 +1,7 @@
 package hu.ppke.yeast.service;
 
 import hu.ppke.yeast.YeastApp;
-import hu.ppke.yeast.config.Constants;
+import hu.ppke.yeast.config.constants.Constants;
 import hu.ppke.yeast.domain.User;
 import io.github.jhipster.config.JHipsterProperties;
 import org.junit.Before;
