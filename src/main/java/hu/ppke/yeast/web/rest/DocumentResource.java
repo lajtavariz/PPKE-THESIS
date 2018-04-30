@@ -124,7 +124,7 @@ public class DocumentResource {
      */
     @RequestMapping(value = "/documents/search", method = RequestMethod.GET)
     @Timed
-    public ResponseEntity<List<DocumentSearchResultDTO>> getDocuments(@RequestParam String query, @RequestParam int measure) {
+    public ResponseEntity<List<DocumentSearchResultDTO>> searchDocuments(@RequestParam String query, @RequestParam int measure) {
         log.debug("REST request to get a list of documents which are relevant for the query " + query);
         List<DocumentSearchResultDTO> documentDTOs = documentService.search(query, measure);
 

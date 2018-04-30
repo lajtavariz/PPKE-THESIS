@@ -26,7 +26,9 @@ public class SimilarityCalculator {
 
     private static double calculateCosineMeasure(RealVector queryVec, RealVector documentVec) {
 
-        return queryVec.dotProduct(documentVec)
-            / Math.sqrt(queryVec.dotProduct(queryVec)) * Math.sqrt(documentVec.dotProduct(documentVec));
+        double numerator = queryVec.dotProduct(documentVec);
+        double denumerator = Math.sqrt(queryVec.dotProduct(queryVec)) * Math.sqrt(documentVec.dotProduct(documentVec));
+
+        return numerator / denumerator;
     }
 }

@@ -14,8 +14,13 @@ public class WeightCalculator {
         }
     }
 
-    private static double calculateTF_IDF(Long frequency, int nrOfAllDocuments, Long nrOfDocumentsInWhichTheIndexOccurs) {
+    private static double calculateTF_IDF(Long frequency, int nrOfAllDocuments, Long docCountForIndex) {
+        double nrOfAllDocumentsDouble = nrOfAllDocuments;
+        double docCountForIndexDouble = docCountForIndex;
 
-        return frequency * Math.log10(nrOfAllDocuments / nrOfDocumentsInWhichTheIndexOccurs);
+        double weight = frequency * Math.log10(nrOfAllDocumentsDouble / docCountForIndexDouble);
+
+
+        return weight;
     }
 }

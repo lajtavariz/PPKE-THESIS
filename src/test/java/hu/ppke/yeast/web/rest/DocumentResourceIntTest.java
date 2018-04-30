@@ -54,8 +54,14 @@ public class DocumentResourceIntTest {
 
     private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
     private static final String UPDATED_CONTENT = "BBBBBBBBBB";
-    private static final String CONTENT1 = "The quick 8brown {fox} jumped over the lazy dog,999 then the dog and the fox eat the rabbit:).";
+    private static final String CONTENT1 = "The quick 8brown {fox} jumped over the lazy dog,999 then the dog and the fox eat the rabbit.";
     private static final String CONTENT2 = "Foxes are red and dogs are white";
+    private static final String CONTENT3 = "Red grapes are tasty";
+
+    private static final String QUERY1 = "Do foxes eat a rabbit?";
+    private static final String QUERY2 = "I want to find red grapes";
+    private static final String QUERY3 = "Fox dog common ancestor";
+    private static final String QUERY4 = "Who killed the girl?";
 
     private static final String QUICK = "quick";
     private static final String BROWN = "brown";
@@ -262,6 +268,40 @@ public class DocumentResourceIntTest {
 
         return docIndexWeights.stream().map(p -> roundDouble(p.getWeight())).collect(Collectors.toList());
     }
+
+    @Test
+    @Transactional
+    public void searchDocuments_resultsAreOK() throws Exception {
+        // Create the documents
+        doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT1), HttpStatus.CREATED);
+
+        doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT2), HttpStatus.CREATED);
+
+        doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT3), HttpStatus.CREATED);
+
+        String response = doSearchAndValidateResponse(QUERY1, 0, HttpStatus.OK);
+
+        int a = 5;
+
+
+    }
+
+    private String doSearchAndValidateResponse(String query, int measure, HttpStatus expectedStatus) throws Exception {
+        String response = restDocumentMockMvc.perform(get("/api/documents/search")
+            .param("query", query)
+            .param("measure", Integer.toString(measure)))
+            .andExpect(status().is(expectedStatus.value())).andReturn().getResponse().getContentAsString();
+
+        return response;
+    }
+
+
 
     @Test
     @Transactional

@@ -1,9 +1,9 @@
 package hu.ppke.yeast.service.dto;
 
 
-import java.time.LocalDate;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -17,6 +17,15 @@ public class DocumentDTO implements Serializable {
     private LocalDate creation_date;
 
     private String content;
+
+    public DocumentDTO() {
+    }
+
+    DocumentDTO(Long id, LocalDate creation_date, String content) {
+        this.id = id;
+        this.creation_date = creation_date;
+        this.content = content;
+    }
 
     public Long getId() {
         return id;

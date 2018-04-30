@@ -51,8 +51,7 @@ public class TestUtil {
     public static <T> T convertJsonStringToObject(T dto, String json) {
         ObjectMapper mapper = generateMapper();
         try {
-            T returnObject = (T) mapper.readValue(json, dto.getClass());
-            return returnObject;
+            return (T) mapper.readValue(json, dto.getClass());
         } catch (Exception exc) {
             log.error("An exception has occured while parsing the json string", exc);
             return null;

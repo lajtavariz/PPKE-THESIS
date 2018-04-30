@@ -81,8 +81,10 @@ public class QueryProcessor extends AbstractProcessor {
             double similarityMeasure = calculateSimilarity(queryWeights, documentWeights, measure);
 
             if (similarityMeasure != 0.0) {
-                DocumentSearchResultDTO documentSearchResultDTO = (DocumentSearchResultDTO) documentMapper.toDto(currentDoc);
-                resultList.add(documentSearchResultDTO.setSimilarityMeasure(similarityMeasure));
+                DocumentSearchResultDTO documentSearchResultDTO =
+                    new DocumentSearchResultDTO(documentMapper.toDto(currentDoc), similarityMeasure);
+
+                resultList.add(documentSearchResultDTO);
             }
         }
 
