@@ -1,7 +1,7 @@
 package hu.ppke.yeast.calculator;
 
 import static hu.ppke.yeast.config.constants.Constants.DEFAULT_WEIGHT_METHOD;
-import static hu.ppke.yeast.config.constants.WeightMethod.TF_IDF;
+import static hu.ppke.yeast.enums.WeightMethod.TF_IDF;
 
 public class WeightCalculator {
 

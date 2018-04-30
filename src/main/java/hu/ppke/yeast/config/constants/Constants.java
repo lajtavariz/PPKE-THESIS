@@ -1,5 +1,7 @@
 package hu.ppke.yeast.config.constants;
 
+import hu.ppke.yeast.enums.WeightMethod;
+
 /**
  * Application constants.
  */

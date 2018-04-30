@@ -1,4 +1,4 @@
-package hu.ppke.yeast.config.constants;
+package hu.ppke.yeast.enums;
 
 public enum WeightMethod {
     TF_IDF
