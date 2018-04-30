@@ -1,6 +1,7 @@
 package hu.ppke.yeast.service;
 
 import hu.ppke.yeast.service.dto.DocumentDTO;
+import hu.ppke.yeast.service.dto.DocumentSearchResultDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -39,10 +40,10 @@ public interface DocumentService {
      * Get the documents relevant to the query.
      *
      * @param query  the search query
-     * @param metric the chosen metric
+     * @param measure the chosen metric
      * @return the list of entities
      */
-    List<DocumentDTO> search(String query, int metric);
+    List<DocumentSearchResultDTO> search(String query, int measure);
 
     /**
      * Delete the "id" document.

@@ -1,11 +1,14 @@
 package hu.ppke.yeast.service.impl;
 
 import hu.ppke.yeast.domain.Document;
+import hu.ppke.yeast.enums.SimiliarityMeasure;
 import hu.ppke.yeast.generator.WeightMatrixGenerator;
 import hu.ppke.yeast.processor.DocumentProcessor;
+import hu.ppke.yeast.processor.QueryProcessor;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.dto.DocumentDTO;
+import hu.ppke.yeast.service.dto.DocumentSearchResultDTO;
 import hu.ppke.yeast.service.mapper.DocumentMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,16 +33,19 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentMapper documentMapper;
     private final DocumentProcessor documentProcessor;
+    private final QueryProcessor queryProcessor;
     private final WeightMatrixGenerator weightMatrixGenerator;
 
     @Autowired
     public DocumentServiceImpl(DocumentRepository documentRepository,
                                DocumentMapper documentMapper,
                                DocumentProcessor documentProcessor,
+                               QueryProcessor queryProcessor,
                                WeightMatrixGenerator weightMatrixGenerator) {
         this.documentRepository = documentRepository;
         this.documentMapper = documentMapper;
         this.documentProcessor = documentProcessor;
+        this.queryProcessor = queryProcessor;
         this.weightMatrixGenerator = weightMatrixGenerator;
     }
 
@@ -71,8 +77,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentDTO> search(String query, int metric) {
-        return null;
+    public List<DocumentSearchResultDTO> search(String query, int measure) {
+        return queryProcessor.getRelevantDocuments(query, SimiliarityMeasure.getMeasure(measure));
     }
 
     @Override

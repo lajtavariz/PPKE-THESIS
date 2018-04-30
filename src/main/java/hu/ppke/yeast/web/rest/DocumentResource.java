@@ -3,6 +3,7 @@ package hu.ppke.yeast.web.rest;
 import com.codahale.metrics.annotation.Timed;
 import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.dto.DocumentDTO;
+import hu.ppke.yeast.service.dto.DocumentSearchResultDTO;
 import hu.ppke.yeast.web.rest.errors.BadRequestAlertException;
 import hu.ppke.yeast.web.rest.util.HeaderUtil;
 import hu.ppke.yeast.web.rest.util.PaginationUtil;
@@ -123,12 +124,11 @@ public class DocumentResource {
      */
     @RequestMapping(value = "/documents/search", method = RequestMethod.GET)
     @Timed
-    public ResponseEntity<List<DocumentDTO>> getDocuments(@RequestParam String query, @RequestParam int measure) {
+    public ResponseEntity<List<DocumentSearchResultDTO>> getDocuments(@RequestParam String query, @RequestParam int measure) {
         log.debug("REST request to get a list of documents which are relevant for the query " + query);
-        List<DocumentDTO> documentDTOS = documentService.search(query, measure);
+        List<DocumentSearchResultDTO> documentDTOs = documentService.search(query, measure);
 
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(documentDTOs));
     }
 
     /**

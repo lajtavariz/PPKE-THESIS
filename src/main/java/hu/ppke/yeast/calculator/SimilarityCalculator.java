@@ -10,14 +10,17 @@ import static hu.ppke.yeast.enums.SimiliarityMeasure.COSINE;
 
 public class SimilarityCalculator {
 
-    public static double calculateSimilarity(List<Double> queryWeights, List<Double> documentWeights, int measure) {
+    public static double calculateSimilarity(List<Double> queryWeights,
+                                             List<Double> documentWeights, SimiliarityMeasure measure) {
+
         RealVector queryVec = new ArrayRealVector(queryWeights.stream().mapToDouble(d -> d).toArray());
         RealVector documentVec = new ArrayRealVector(documentWeights.stream().mapToDouble(d -> d).toArray());
 
-        if (COSINE.equals(SimiliarityMeasure.getMeasure(measure))) {
+        if (COSINE.equals(measure)) {
             return calculateCosineMeasure(queryVec, documentVec);
         } else {
-            throw new UnsupportedOperationException("Similarity measure calculation with id " + measure + " is not yet supported!");
+            throw new UnsupportedOperationException("Similarity measure calculation for " +
+                measure + " measure is not yet supported!");
         }
     }
 
