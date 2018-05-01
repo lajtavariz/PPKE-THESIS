@@ -1,19 +1,20 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 
-import { YeastSharedModule } from '../../shared';
+import {YeastSharedModule} from '../../shared';
 import {
-    DocumentService,
-    DocumentPopupService,
     DocumentComponent,
+    DocumentDeleteDialogComponent,
+    DocumentDeletePopupComponent,
     DocumentDetailComponent,
     DocumentDialogComponent,
     DocumentPopupComponent,
-    DocumentDeletePopupComponent,
-    DocumentDeleteDialogComponent,
-    documentRoute,
     documentPopupRoute,
+    DocumentPopupService,
     DocumentResolvePagingParams,
+    documentRoute,
+    DocumentSearchComponent,
+    DocumentService
 } from './';
 
 const ENTITY_STATES = [
@@ -32,6 +33,7 @@ const ENTITY_STATES = [
         DocumentDialogComponent,
         DocumentDeleteDialogComponent,
         DocumentPopupComponent,
+        DocumentSearchComponent,
         DocumentDeletePopupComponent,
     ],
     entryComponents: [
@@ -40,6 +42,7 @@ const ENTITY_STATES = [
         DocumentPopupComponent,
         DocumentDeleteDialogComponent,
         DocumentDeletePopupComponent,
+        DocumentSearchComponent
     ],
     providers: [
         DocumentService,
