@@ -5,6 +5,7 @@ import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.domain.DocumentIndex;
 import hu.ppke.yeast.domain.DocumentIndexWeight;
 import hu.ppke.yeast.domain.Index;
+import hu.ppke.yeast.repository.DocumentIndexRepository;
 import hu.ppke.yeast.repository.DocumentIndexWeightRepository;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.repository.IndexRepository;
@@ -24,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ import static hu.ppke.yeast.web.rest.TestUtil.createFormattingConversionService;
 import static hu.ppke.yeast.web.rest.util.RoundUtil.roundDouble;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -79,12 +82,14 @@ public class DocumentResourceIntTest {
     private static final List<Double> expectedWeightsForDoc1 = Arrays.asList(0.30103, 0.30103, 0.30103, 0.30103, 0.30103, 0.30103, 0.0, 0.0, 0.30103, 0.0, 0.0);
     private static final List<Double> expectedWeightsForDoc2 = Arrays.asList(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.30103, 0.30103);
 
-
     @Autowired
     private DocumentRepository documentRepository;
 
     @Autowired
     private IndexRepository indexRepository;
+
+    @Autowired
+    private DocumentIndexRepository documentIndexRepository;
 
     @Autowired
     private DocumentIndexWeightRepository documentIndexWeightRepository;
@@ -272,6 +277,7 @@ public class DocumentResourceIntTest {
     @Test
     @Transactional
     public void searchDocuments_resultsAreOK() throws Exception {
+
         // Create the documents
         doPostRequestAndValidateResponse(new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
@@ -285,23 +291,41 @@ public class DocumentResourceIntTest {
             .setCreation_date(DEFAULT_CREATION_DATE)
             .setContent(CONTENT3), HttpStatus.CREATED);
 
-        String response = doSearchAndValidateResponse(QUERY1, 0, HttpStatus.OK);
+        // Validate
+        ResultActions response = doSearchAndValidateResponse(QUERY1, 0, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(2)));
+        response.andExpect(jsonPath("$.[0].content").value(CONTENT1));
+        response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.5466396719850004"));
+        response.andExpect(jsonPath("$.[1].content").value(CONTENT2));
+        response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.07852284477467994"));
 
-        int a = 5;
+        response = doSearchAndValidateResponse(QUERY2, 0, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(2)));
+        response.andExpect(jsonPath("$.[0].content").value(CONTENT3));
+        response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.7293023054525128"));
+        response.andExpect(jsonPath("$.[1].content").value(CONTENT2));
+        response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.10766844446756353"));
 
+        response = doSearchAndValidateResponse(QUERY3, 0, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(2)));
+        response.andExpect(jsonPath("$.[0].content").value(CONTENT2));
+        response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.4397686327965182"));
+        response.andExpect(jsonPath("$.[1].content").value(CONTENT1));
+        response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.36701832226218667"));
 
+        response = doSearchAndValidateResponse(QUERY4, 0, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(0)));
     }
 
-    private String doSearchAndValidateResponse(String query, int measure, HttpStatus expectedStatus) throws Exception {
-        String response = restDocumentMockMvc.perform(get("/api/documents/search")
+    private ResultActions doSearchAndValidateResponse(String query, int measure, HttpStatus expectedStatus) throws Exception {
+        ResultActions response = restDocumentMockMvc.perform(get("/api/documents/search")
             .param("query", query)
             .param("measure", Integer.toString(measure)))
-            .andExpect(status().is(expectedStatus.value())).andReturn().getResponse().getContentAsString();
+            .andExpect(status().is(expectedStatus.value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE));
 
         return response;
     }
-
-
 
     @Test
     @Transactional

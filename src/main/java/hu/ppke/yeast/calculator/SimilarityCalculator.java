@@ -29,6 +29,10 @@ public class SimilarityCalculator {
         double numerator = queryVec.dotProduct(documentVec);
         double denumerator = Math.sqrt(queryVec.dotProduct(queryVec)) * Math.sqrt(documentVec.dotProduct(documentVec));
 
-        return numerator / denumerator;
+        if (denumerator == 0.0) {
+            return 0.0;
+        } else {
+            return numerator / denumerator;
+        }
     }
 }
