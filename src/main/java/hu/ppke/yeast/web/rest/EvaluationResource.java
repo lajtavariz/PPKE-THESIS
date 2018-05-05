@@ -1,7 +1,7 @@
 package hu.ppke.yeast.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import hu.ppke.yeast.service.dto.EvaluationResultDTO;
+import hu.ppke.yeast.service.dto.evaluation.EvaluationResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

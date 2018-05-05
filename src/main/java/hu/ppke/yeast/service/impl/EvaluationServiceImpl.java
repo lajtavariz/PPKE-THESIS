@@ -1,9 +1,11 @@
 package hu.ppke.yeast.service.impl;
 
-import com.opencsv.CSVReaderBuilder;
 import hu.ppke.yeast.enumeration.SimiliarityMeasure;
 import hu.ppke.yeast.service.EvaluationService;
-import hu.ppke.yeast.service.dto.EvaluationResultDTO;
+import hu.ppke.yeast.service.dto.evaluation.ADIArticle;
+import hu.ppke.yeast.service.dto.evaluation.ADIQuery;
+import hu.ppke.yeast.service.dto.evaluation.EvaluationResultDTO;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +29,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     private final ResourceLoader resourceLoader;
 
-    private List<String> stopWords;
+    private List<ADIArticle> adiArticles = new ArrayList<>();
+    private List<ADIQuery> adiQueries = new ArrayList<>();
 
     @Autowired
     public EvaluationServiceImpl(ResourceLoader resourceLoader) {
@@ -37,10 +39,39 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     @PostConstruct
     public void init() throws Exception {
-        Resource resource = resourceLoader.getResource("classpath:" + "txt_processing/stop_words.csv");
-        log.debug("Loading stopwords from stop_words.csv file");
-        String[] stopWordsArray = new CSVReaderBuilder(new InputStreamReader(resource.getInputStream())).build().readNext();
-        stopWords = Arrays.asList(stopWordsArray);
+        loadArticles();
+        validateArticles();
+
+    }
+
+    private void loadArticles() throws Exception {
+        Resource resource = resourceLoader.getResource("classpath:" + "similarity_eval/adi/ADI.ALL");
+        log.debug("Loading documents from ADI test collection...");
+        String adiAll = IOUtils.toString(resource.getInputStream(), "UTF-8");
+        String[] articles = adiAll.split("\\.I");
+
+        for (int i = 1; i < articles.length; i++) {
+            String article = articles[i];
+            String[] splittedArticle = article.split("\\.T|\\.A|\\.W");
+
+            adiArticles.add(new ADIArticle()
+                .setId(Integer.parseInt(splittedArticle[0].replaceAll("[^\\d]", "")))
+                .setTitle(splittedArticle[1])
+                .setContent(splittedArticle[splittedArticle.length - 1]));
+        }
+    }
+
+    private void validateArticles() throws Exception {
+        assert adiArticles.size() == 82;
+        assert adiArticles.get(0).getId() == 1;
+        assert adiArticles.get(0).getTitle().equals("\r\nthe ibm dsd technical information center - a total systems approach\r\n" +
+            "combining traditional library features\r\n" +
+            "and mechanized computer processing\r\n");
+        assert adiArticles.get(81).getId() == 82;
+        assert adiArticles.get(81).getTitle().equals("\r\nmachine recognition of linguistic synonymy and logical deducibility .\r\n");
+        assert adiArticles.get(66).getContent().equals("\r\na national plan for science abstracting and indexing services is\r\n" +
+            "presented .  both profession oriented services and project oriented\r\n" +
+            "services are considered .  market, volume and cost are discussed .\r\n");
     }
 
     @Override
