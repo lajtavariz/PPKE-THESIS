@@ -1,7 +1,7 @@
 package hu.ppke.yeast.service.impl;
 
 import hu.ppke.yeast.domain.Document;
-import hu.ppke.yeast.enums.SimiliarityMeasure;
+import hu.ppke.yeast.enumeration.SimiliarityMeasure;
 import hu.ppke.yeast.generator.WeightMatrixGenerator;
 import hu.ppke.yeast.processor.DocumentProcessor;
 import hu.ppke.yeast.processor.QueryProcessor;

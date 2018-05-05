@@ -3,7 +3,7 @@ package hu.ppke.yeast.processor;
 import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.domain.DocumentIndexWeight;
 import hu.ppke.yeast.domain.Index;
-import hu.ppke.yeast.enums.SimiliarityMeasure;
+import hu.ppke.yeast.enumeration.SimiliarityMeasure;
 import hu.ppke.yeast.repository.DocumentIndexWeightRepository;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.repository.IndexRepository;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 
 import static hu.ppke.yeast.calculator.ClassicalSimilarityCalculator.calculateSimilarity;
 import static hu.ppke.yeast.calculator.HyperbolicSimilarityCalculator.calculateEuclideanDistance;
-import static hu.ppke.yeast.calculator.HyperbolicSimilarityCalculator.calculateHyperBolicMeasure;
+import static hu.ppke.yeast.calculator.HyperbolicSimilarityCalculator.calculateHyperbolicMeasure;
 import static hu.ppke.yeast.calculator.WeightCalculator.calculateWeight;
-import static hu.ppke.yeast.enums.SimiliarityMeasure.HYPERBOLIC;
+import static hu.ppke.yeast.enumeration.SimiliarityMeasure.HYPERBOLIC;
 
 /**
  * This class is responsible for giving back the relevant documents for a given query
@@ -98,7 +98,7 @@ public class QueryProcessor extends AbstractProcessor {
 
             for (Document currentDoc : documents) {
 
-                double similarityMeasure = calculateHyperBolicMeasure(documentToDistance.get(currentDoc), r);
+                double similarityMeasure = calculateHyperbolicMeasure(documentToDistance.get(currentDoc), r);
                 addElementToResultList(similarityMeasure, currentDoc, resultList);
             }
 

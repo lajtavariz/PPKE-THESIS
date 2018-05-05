@@ -1,12 +1,12 @@
 package hu.ppke.yeast.calculator;
 
-import hu.ppke.yeast.enums.SimiliarityMeasure;
+import hu.ppke.yeast.enumeration.SimiliarityMeasure;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 import java.util.List;
 
-import static hu.ppke.yeast.enums.SimiliarityMeasure.COSINE;
+import static hu.ppke.yeast.enumeration.SimiliarityMeasure.COSINE;
 
 /**
  * This class is responsible for calculating the classical similarities

@@ -19,7 +19,7 @@ public class HyperbolicSimilarityCalculator {
         return queryVec.getDistance(documentVec);
     }
 
-    public static double calculateHyperBolicMeasure(double euclideanDistance, double r) {
+    public static double calculateHyperbolicMeasure(double euclideanDistance, double r) {
         return 1 / Math.log1p(((r + euclideanDistance) / (r - euclideanDistance)) * Math.E);
     }
 }
