@@ -1,7 +1,7 @@
 package hu.ppke.yeast.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import hu.ppke.yeast.service.dto.EvaluateSimilarityDTO;
+import hu.ppke.yeast.service.dto.EvaluationDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-public class EvaluateSimilarityResource {
+public class EvaluationResource {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -27,7 +27,7 @@ public class EvaluateSimilarityResource {
      */
     @RequestMapping(value = "/evaluate", method = RequestMethod.GET)
     @Timed
-    public ResponseEntity<EvaluateSimilarityDTO> searchDocuments(@RequestParam int measure) {
+    public ResponseEntity<EvaluationDTO> searchDocuments(@RequestParam int measure) {
         log.debug("REST request to get the results of the similarity measure evaluation");
 
         return null;
