@@ -14,11 +14,16 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static hu.ppke.yeast.calculator.SimilarityCalculator.calculateSimilarity;
+import static hu.ppke.yeast.calculator.ClassicalSimilarityCalculator.calculateSimilarity;
+import static hu.ppke.yeast.calculator.HyperbolicSimilarityCalculator.calculateEuclideanDistance;
+import static hu.ppke.yeast.calculator.HyperbolicSimilarityCalculator.calculateHyperBolicMeasure;
 import static hu.ppke.yeast.calculator.WeightCalculator.calculateWeight;
+import static hu.ppke.yeast.enums.SimiliarityMeasure.HYPERBOLIC;
 
 /**
  * This class is responsible for giving back the relevant documents for a given query
@@ -67,35 +72,70 @@ public class QueryProcessor extends AbstractProcessor {
         return queryWeights;
     }
 
+    private List<String> getRawIndices(String query) {
+        return stemWords(filterWords(getWords(query)));
+    }
+
     private List<DocumentSearchResultDTO> getRelevantDocuments(List<Double> queryWeights,
                                                                List<Document> documents,
                                                                SimiliarityMeasure measure) {
 
         List<DocumentSearchResultDTO> resultList = new ArrayList<>();
 
-        for (Document currentDoc : documents) {
-            List<Double> documentWeights = documentIndexWeightRepository
-                .findByDocumentIdOrderByIndexIdAsc(currentDoc.getId())
-                .stream().map(DocumentIndexWeight::getWeight).collect(Collectors.toList());
+        if (HYPERBOLIC.equals(measure)) {
+            Map<Document, Double> documentToDistance = new HashMap<>();
+            double maxD = 0;
 
-            double similarityMeasure = calculateSimilarity(queryWeights, documentWeights, measure);
+            for (Document currentDoc : documents) {
+                List<Double> documentWeights = getDocumentWeights(currentDoc);
+                double euclideanDistance = calculateEuclideanDistance(queryWeights, documentWeights);
+                maxD = euclideanDistance > maxD ? euclideanDistance : maxD;
 
-            if (similarityMeasure != 0.0) {
-                DocumentSearchResultDTO documentSearchResultDTO =
-                    new DocumentSearchResultDTO(documentMapper.toDto(currentDoc), similarityMeasure);
-
-                resultList.add(documentSearchResultDTO);
+                documentToDistance.put(currentDoc, euclideanDistance);
             }
-        }
 
+            double r = maxD * 1.1;
+
+            for (Document currentDoc : documents) {
+
+                double similarityMeasure = calculateHyperBolicMeasure(documentToDistance.get(currentDoc), r);
+                addElementToResultList(similarityMeasure, currentDoc, resultList);
+            }
+
+            return sortResultList(resultList);
+
+        } else {
+            for (Document currentDoc : documents) {
+                List<Double> documentWeights = getDocumentWeights(currentDoc);
+
+                double similarityMeasure = calculateSimilarity(queryWeights, documentWeights, measure);
+                addElementToResultList(similarityMeasure, currentDoc, resultList);
+            }
+
+            return sortResultList(resultList);
+        }
+    }
+
+    private List<Double> getDocumentWeights(Document document) {
+        return documentIndexWeightRepository
+            .findByDocumentIdOrderByIndexIdAsc(document.getId())
+            .stream().map(DocumentIndexWeight::getWeight).collect(Collectors.toList());
+    }
+
+    private void addElementToResultList(double similarityMeasure, Document document,
+                                        List<DocumentSearchResultDTO> resultList) {
+        if (similarityMeasure != 0.0) {
+            DocumentSearchResultDTO documentSearchResultDTO =
+                new DocumentSearchResultDTO(documentMapper.toDto(document), similarityMeasure);
+
+            resultList.add(documentSearchResultDTO);
+        }
+    }
+
+    private List<DocumentSearchResultDTO> sortResultList(List<DocumentSearchResultDTO> resultList) {
         return resultList
             .stream()
             .sorted((p1, p2) -> Double.compare(p2.getSimilarityMeasure(), p1.getSimilarityMeasure()))
             .collect(Collectors.toList());
     }
-
-    private List<String> getRawIndices(String query) {
-        return stemWords(filterWords(getWords(query)));
-    }
-
 }

@@ -8,7 +8,10 @@ import java.util.List;
 
 import static hu.ppke.yeast.enums.SimiliarityMeasure.COSINE;
 
-public class SimilarityCalculator {
+/**
+ * This class is responsible for calculating the classical similarities
+ */
+public class ClassicalSimilarityCalculator {
 
     public static double calculateSimilarity(List<Double> queryWeights,
                                              List<Double> documentWeights, SimiliarityMeasure measure) {
