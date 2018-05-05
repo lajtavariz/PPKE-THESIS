@@ -276,7 +276,7 @@ public class DocumentResourceIntTest {
 
     @Test
     @Transactional
-    public void searchDocuments_resultsAreOK() throws Exception {
+    public void searchDocuments_usingCosineMeasure_resultsAreOK() throws Exception {
 
         // Create the documents
         doPostRequestAndValidateResponse(new Document()
@@ -315,6 +315,62 @@ public class DocumentResourceIntTest {
 
         response = doSearchAndValidateResponse(QUERY4, 0, HttpStatus.OK);
         response.andExpect(jsonPath("$.*    ", hasSize(0)));
+    }
+
+    @Test
+    @Transactional
+    public void searchDocuments_usingHyperbolicMeasure_resultsAreOK() throws Exception {
+
+        // Create the documents
+        doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT1), HttpStatus.CREATED);
+
+        doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT2), HttpStatus.CREATED);
+
+        doPostRequestAndValidateResponse(new Document()
+            .setCreation_date(DEFAULT_CREATION_DATE)
+            .setContent(CONTENT3), HttpStatus.CREATED);
+
+        // Validate
+        ResultActions response = doSearchAndValidateResponse(QUERY1, 1, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(3)));
+        response.andExpect(jsonPath("$.[0].content").value(CONTENT2));
+        response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.362175862184315"));
+        response.andExpect(jsonPath("$.[1].content").value(CONTENT3));
+        response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.3147792214690062"));
+        response.andExpect(jsonPath("$.[2].content").value(CONTENT1));
+        response.andExpect(jsonPath("$.[2].similarityMeasure").value("0.24619088333668257"));
+
+
+        response = doSearchAndValidateResponse(QUERY2, 1, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(3)));
+        response.andExpect(jsonPath("$.[0].content").value(CONTENT3));
+        response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.5560256849197538"));
+        response.andExpect(jsonPath("$.[1].content").value(CONTENT2));
+        response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.4755972953158331"));
+        response.andExpect(jsonPath("$.[2].content").value(CONTENT1));
+        response.andExpect(jsonPath("$.[2].similarityMeasure").value("0.24619088333668268"));
+
+        response = doSearchAndValidateResponse(QUERY3, 1, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(3)));
+        response.andExpect(jsonPath("$.[0].content").value(CONTENT2));
+        response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.5229761284377268"));
+        response.andExpect(jsonPath("$.[1].content").value(CONTENT3));
+        response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.4404465512213321"));
+        response.andExpect(jsonPath("$.[2].content").value(CONTENT1));
+        response.andExpect(jsonPath("$.[2].similarityMeasure").value("0.24619088333668263"));
+
+        response = doSearchAndValidateResponse(QUERY4, 1, HttpStatus.OK);
+        response.andExpect(jsonPath("$.*    ", hasSize(3)));
+        response.andExpect(jsonPath("$.[0].content").value(CONTENT2));
+        response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.5123533823419758"));
+        response.andExpect(jsonPath("$.[1].content").value(CONTENT3));
+        response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.46766990254580626"));
+        response.andExpect(jsonPath("$.[2].content").value(CONTENT1));
+        response.andExpect(jsonPath("$.[2].similarityMeasure").value("0.24619088333668263"));
     }
 
     private ResultActions doSearchAndValidateResponse(String query, int measure, HttpStatus expectedStatus) throws Exception {
