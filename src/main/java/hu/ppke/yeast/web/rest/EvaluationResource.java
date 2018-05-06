@@ -2,7 +2,7 @@ package hu.ppke.yeast.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import hu.ppke.yeast.service.EvaluationService;
-import hu.ppke.yeast.service.dto.evaluation.EvaluationResultDTO;
+import hu.ppke.yeast.service.dto.EvaluationResultDTO;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -33,6 +33,9 @@ public class Document implements Serializable {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "evaluation_id")
+    private Long evaluationId;
+
     @OneToMany(mappedBy = "document")
     private Set<DocumentIndex> documentIndices = new HashSet<>();
 
@@ -64,6 +67,15 @@ public class Document implements Serializable {
 
     public Document setContent(String content) {
         this.content = content;
+        return this;
+    }
+
+    public Long getEvaluationId() {
+        return evaluationId;
+    }
+
+    public Document setEvaluationId(Long evaluationId) {
+        this.evaluationId = evaluationId;
         return this;
     }
 

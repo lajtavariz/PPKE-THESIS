@@ -18,6 +18,8 @@ public class DocumentDTO implements Serializable {
 
     private String content;
 
+    private Long evaluationId;
+
     public DocumentDTO() {
     }
 
@@ -49,6 +51,15 @@ public class DocumentDTO implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Long getEvaluationId() {
+        return evaluationId;
+    }
+
+    public DocumentDTO setEvaluationId(Long evaluationId) {
+        this.evaluationId = evaluationId;
+        return this;
     }
 
     @Override

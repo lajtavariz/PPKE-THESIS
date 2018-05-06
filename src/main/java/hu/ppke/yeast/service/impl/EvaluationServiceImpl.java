@@ -6,9 +6,9 @@ import hu.ppke.yeast.service.DocumentIndexService;
 import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.EvaluationService;
 import hu.ppke.yeast.service.dto.DocumentSearchResultDTO;
+import hu.ppke.yeast.service.dto.EvaluationResultDTO;
 import hu.ppke.yeast.service.dto.evaluation.ADIArticle;
 import hu.ppke.yeast.service.dto.evaluation.ADIQuery;
-import hu.ppke.yeast.service.dto.evaluation.EvaluationResultDTO;
 import hu.ppke.yeast.service.dto.evaluation.QueryStatistic;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -118,7 +118,7 @@ public class EvaluationServiceImpl implements EvaluationService {
         for (ADIArticle article : articles) {
             Document document = new Document()
                 .setCreation_date(LocalDate.now())
-                .setId(article.getId())
+                .setEvaluationId(article.getId())
                 .setContent(article.getTitle() + " " + article.getContent());
 
             documentsToSave.add(document);
@@ -136,7 +136,7 @@ public class EvaluationServiceImpl implements EvaluationService {
     }
 
     private QueryStatistic generateQueryStatistic(List<DocumentSearchResultDTO> searchResults, ADIQuery query) {
-        double rA = searchResults.stream().filter(p -> query.getRelevantDocuments().contains(p.getId())).count();
+        double rA = searchResults.stream().filter(p -> query.getRelevantDocuments().contains(p.getEvaluationId())).count();
         double r = query.getRelevantDocuments().size();
         double a = searchResults.size();
 

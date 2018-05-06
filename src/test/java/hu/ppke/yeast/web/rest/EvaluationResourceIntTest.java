@@ -4,6 +4,7 @@ import hu.ppke.yeast.YeastApp;
 import hu.ppke.yeast.service.EvaluationService;
 import hu.ppke.yeast.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -17,6 +18,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static hu.ppke.yeast.web.rest.TestUtil.createFormattingConversionService;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Test class for the EvaluationResource REST controller.
@@ -54,10 +57,13 @@ public class EvaluationResourceIntTest {
 
     @Test
     @Transactional
+    @Ignore
     public void test1() throws Exception {
-        /*restMockMvc.perform(get("/api/evaluate")
+        String result = restMockMvc.perform(get("/api/evaluate")
             .param("measure", "0"))
-            .andExpect(status().isOk());*/
+            .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        int a = 5;
     }
 
 }
