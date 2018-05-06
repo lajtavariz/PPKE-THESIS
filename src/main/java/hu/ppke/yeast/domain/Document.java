@@ -41,8 +41,9 @@ public class Document implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public Document setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public LocalDate getCreation_date() {

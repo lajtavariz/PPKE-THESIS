@@ -1,5 +1,6 @@
 package hu.ppke.yeast.service;
 
+import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.service.dto.DocumentDTO;
 import hu.ppke.yeast.service.dto.DocumentSearchResultDTO;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,15 @@ public interface DocumentService {
      * @return the persisted entity
      */
     DocumentDTO save(DocumentDTO documentDTO);
+
+    /**
+     * Save a document.
+     *
+     * @param document the entity to save
+     * @return the persisted entity
+     */
+    Document save(Document document);
+
 
     /**
      * Get all the documents.

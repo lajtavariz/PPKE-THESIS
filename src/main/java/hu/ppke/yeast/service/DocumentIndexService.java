@@ -16,4 +16,9 @@ public interface DocumentIndexService {
      */
     DocumentIndex save(Document document, Index index, long count);
 
+    /**
+     * This method deletes all documents, document-index pairs and indices from the db
+     */
+    void clearDB();
+
 }

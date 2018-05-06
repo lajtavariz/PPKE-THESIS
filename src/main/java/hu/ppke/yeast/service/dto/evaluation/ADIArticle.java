@@ -1,15 +1,16 @@
 package hu.ppke.yeast.service.dto.evaluation;
 
 public class ADIArticle {
-    private int id;
+
+    private Long id;
     private String title;
     private String content;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public ADIArticle setId(int id) {
+    public ADIArticle setId(Long id) {
         this.id = id;
         return this;
     }

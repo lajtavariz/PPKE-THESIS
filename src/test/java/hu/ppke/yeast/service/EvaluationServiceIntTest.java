@@ -32,15 +32,21 @@ public class EvaluationServiceIntTest {
     @Autowired
     ResourceLoader resourceLoader;
 
+    @Autowired
+    DocumentIndexService documentIndexService;
+
+    @Autowired
+    DocumentService documentService;
+
     @Test
     @Transactional
     @SuppressWarnings("unchecked")
     public void loadFiles_areOK() throws Exception {
-        EvaluationServiceImpl service = new EvaluationServiceImpl(resourceLoader);
+        EvaluationServiceImpl service = new EvaluationServiceImpl(resourceLoader, documentIndexService, documentService);
         service.init();
 
         // Get the list of articles via reflection
-        Field field = service.getClass().getDeclaredField("adiArticles");
+        Field field = service.getClass().getDeclaredField("articles");
         field.setAccessible(true);
         List<ADIArticle> articles = (ArrayList<ADIArticle>) field.get(service);
 
@@ -57,7 +63,7 @@ public class EvaluationServiceIntTest {
             "services are considered .  market, volume and cost are discussed .\r\n");
 
         // Get the list of queries via reflection
-        field = service.getClass().getDeclaredField("adiQueries");
+        field = service.getClass().getDeclaredField("queries");
         field.setAccessible(true);
         List<ADIQuery> queries = (ArrayList<ADIQuery>) field.get(service);
 
@@ -69,6 +75,5 @@ public class EvaluationServiceIntTest {
         assertThat(queries.get(0).getRelevantDocuments()).isEqualTo(Arrays.asList(17L, 46L, 62L));
         assertThat(queries.get(24).getRelevantDocuments()).isEqualTo(Arrays.asList(13L, 24L, 53L));
         assertThat(queries.get(34).getRelevantDocuments()).isEqualTo(Arrays.asList(13L, 24L, 52L, 53L, 56L, 59L, 67L, 79L));
-
     }
 }

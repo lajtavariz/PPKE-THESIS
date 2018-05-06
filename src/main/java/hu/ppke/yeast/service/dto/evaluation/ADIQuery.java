@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ADIQuery {
+
     private int id;
     private String query;
     private List<Long> relevantDocuments = new ArrayList<>();

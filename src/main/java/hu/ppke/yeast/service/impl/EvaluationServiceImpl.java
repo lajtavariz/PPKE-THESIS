@@ -1,11 +1,15 @@
 package hu.ppke.yeast.service.impl;
 
 import com.opencsv.CSVReader;
-import hu.ppke.yeast.enumeration.SimiliarityMeasure;
+import hu.ppke.yeast.domain.Document;
+import hu.ppke.yeast.service.DocumentIndexService;
+import hu.ppke.yeast.service.DocumentService;
 import hu.ppke.yeast.service.EvaluationService;
+import hu.ppke.yeast.service.dto.DocumentSearchResultDTO;
 import hu.ppke.yeast.service.dto.evaluation.ADIArticle;
 import hu.ppke.yeast.service.dto.evaluation.ADIQuery;
 import hu.ppke.yeast.service.dto.evaluation.EvaluationResultDTO;
+import hu.ppke.yeast.service.dto.evaluation.QueryStatistic;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,13 +36,19 @@ public class EvaluationServiceImpl implements EvaluationService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final ResourceLoader resourceLoader;
+    private final DocumentIndexService documentIndexService;
+    private final DocumentService documentService;
 
-    private List<ADIArticle> adiArticles = new ArrayList<>();
-    private List<ADIQuery> adiQueries = new ArrayList<>();
+    private List<ADIArticle> articles = new ArrayList<>();
+    private List<ADIQuery> queries = new ArrayList<>();
 
     @Autowired
-    public EvaluationServiceImpl(ResourceLoader resourceLoader) {
+    public EvaluationServiceImpl(ResourceLoader resourceLoader,
+                                 DocumentIndexService documentIndexService,
+                                 DocumentService documentService) {
         this.resourceLoader = resourceLoader;
+        this.documentIndexService = documentIndexService;
+        this.documentService = documentService;
     }
 
     @PostConstruct
@@ -57,8 +68,8 @@ public class EvaluationServiceImpl implements EvaluationService {
             String article = articles[i];
             String[] splitArticle = article.split("\\.T|\\.A|\\.W");
 
-            adiArticles.add(new ADIArticle()
-                .setId(Integer.parseInt(splitArticle[0].replaceAll("[^\\d]", "")))
+            this.articles.add(new ADIArticle()
+                .setId(Long.parseLong(splitArticle[0].replaceAll("[^\\d]", "")))
                 .setTitle(splitArticle[1])
                 .setContent(splitArticle[splitArticle.length - 1]));
         }
@@ -74,7 +85,7 @@ public class EvaluationServiceImpl implements EvaluationService {
             String query = queries[i];
             String[] splitQuery = query.split("\\.W");
 
-            adiQueries.add(new ADIQuery()
+            this.queries.add(new ADIQuery()
                 .setId(Integer.parseInt(splitQuery[0].replaceAll("[^\\d]", "")))
                 .setQuery(splitQuery[1]));
         }
@@ -87,7 +98,7 @@ public class EvaluationServiceImpl implements EvaluationService {
         List<String[]> records = csvReader.readAll();
         assert records.size() == 170;
 
-        for (ADIQuery adiQuery : adiQueries) {
+        for (ADIQuery adiQuery : queries) {
             List<String[]> filteredRecords = records.stream()
                 .filter(p -> Integer.parseInt(p[0]) == adiQuery.getId())
                 .collect(Collectors.toList());
@@ -100,9 +111,35 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     @Override
     public EvaluationResultDTO evaluate(int measure) {
-        SimiliarityMeasure similiarityMeasure = SimiliarityMeasure.getMeasure(measure);
+        documentIndexService.clearDB();
+        EvaluationResultDTO evaluationResult = new EvaluationResultDTO();
+
+        for (ADIArticle article : articles) {
+            Document document = new Document()
+                .setCreation_date(LocalDate.now())
+                .setId(article.getId())
+                .setContent(article.getTitle() + " " + article.getContent());
+
+            documentService.save(document);
+        }
+
+        for (ADIQuery query : queries) {
+            List<DocumentSearchResultDTO> searchResults = documentService.search(query.getQuery(), measure);
+            evaluationResult.addQueryStatistic(generateQueryStatistic(searchResults, query));
+        }
 
 
-        return null;
+        return evaluationResult;
+    }
+
+    private QueryStatistic generateQueryStatistic(List<DocumentSearchResultDTO> searchResults, ADIQuery query) {
+        double rA = searchResults.stream().filter(p -> query.getRelevantDocuments().contains(p.getId())).count();
+        double r = query.getRelevantDocuments().size();
+        double a = searchResults.size();
+
+        double recall = rA / r;
+        double precision = rA / a;
+
+        return new QueryStatistic().setId(query.getId()).setRecall(recall).setPrecision(precision);
     }
 }

@@ -51,13 +51,20 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDTO save(DocumentDTO documentDTO) {
-        log.debug("Request to save Document : {}", documentDTO);
         Document document = documentMapper.toEntity(documentDTO);
+        document = save(document);
+
+        return documentMapper.toDto(document);
+    }
+
+    @Override
+    public Document save(Document document) {
+        log.debug("Request to save Document : {}", document);
         document = documentRepository.save(document);
         documentProcessor.processDocument(document);
         weightMatrixGenerator.calculateAndPersistWeights();
 
-        return documentMapper.toDto(document);
+        return document;
     }
 
     @Override

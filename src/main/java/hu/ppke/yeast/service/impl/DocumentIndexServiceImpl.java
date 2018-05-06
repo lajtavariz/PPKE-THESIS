@@ -4,6 +4,7 @@ import hu.ppke.yeast.domain.Document;
 import hu.ppke.yeast.domain.DocumentIndex;
 import hu.ppke.yeast.domain.Index;
 import hu.ppke.yeast.repository.DocumentIndexRepository;
+import hu.ppke.yeast.repository.DocumentIndexWeightRepository;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.repository.IndexRepository;
 import hu.ppke.yeast.service.DocumentIndexService;
@@ -18,13 +19,17 @@ public class DocumentIndexServiceImpl implements DocumentIndexService {
     private final DocumentIndexRepository docIndexRepository;
     private final DocumentRepository documentRepository;
     private final IndexRepository indexRepository;
+    private final DocumentIndexWeightRepository documentIndexWeightRepository;
 
     @Autowired
     public DocumentIndexServiceImpl(DocumentIndexRepository docIndexRepository,
-                                    DocumentRepository documentRepository, IndexRepository indexRepository) {
+                                    DocumentRepository documentRepository,
+                                    IndexRepository indexRepository,
+                                    DocumentIndexWeightRepository documentIndexWeightRepository) {
         this.docIndexRepository = docIndexRepository;
         this.documentRepository = documentRepository;
         this.indexRepository = indexRepository;
+        this.documentIndexWeightRepository = documentIndexWeightRepository;
     }
 
     @Override
@@ -40,5 +45,13 @@ public class DocumentIndexServiceImpl implements DocumentIndexService {
         indexRepository.saveAndFlush(index);
 
         return docIndex;
+    }
+
+    @Override
+    public void clearDB() {
+        documentIndexWeightRepository.deleteAll();
+        documentRepository.deleteAll();
+        indexRepository.deleteAll();
+        documentIndexWeightRepository.deleteAll();
     }
 }
