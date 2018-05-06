@@ -97,7 +97,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public List<DocumentSearchResultDTO> search(String query, int measure) {
         SimiliarityMeasure similiarityMeasure = SimiliarityMeasure.getMeasure(measure);
-        log.debug("Search with measure " + similiarityMeasure + "\n and with query " + query);
+        log.debug("Search with measure " + similiarityMeasure + " and with query \"" + query + "\"");
         return queryProcessor.getRelevantDocuments(query, similiarityMeasure);
     }
 

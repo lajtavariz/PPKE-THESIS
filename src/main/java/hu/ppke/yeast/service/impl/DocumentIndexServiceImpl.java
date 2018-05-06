@@ -36,13 +36,13 @@ public class DocumentIndexServiceImpl implements DocumentIndexService {
     public DocumentIndex save(Document document, Index index, long count) {
         DocumentIndex docIndex = new DocumentIndex().setDocument(document).setIndex(index).setCount(count);
 
-        docIndexRepository.saveAndFlush(docIndex);
+        docIndexRepository.save(docIndex);
 
         document.getDocumentIndices().add(docIndex);
         index.getDocumentIndices().add(docIndex);
 
-        documentRepository.saveAndFlush(document);
-        indexRepository.saveAndFlush(index);
+        documentRepository.save(document);
+        indexRepository.save(index);
 
         return docIndex;
     }

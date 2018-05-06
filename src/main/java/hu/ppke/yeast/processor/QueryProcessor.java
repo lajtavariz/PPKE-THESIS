@@ -14,10 +14,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static hu.ppke.yeast.calculator.ClassicalSimilarityCalculator.calculateSimilarity;
@@ -119,9 +116,10 @@ public class QueryProcessor extends AbstractProcessor {
     }
 
     private List<Double> getDocumentWeights(Document document) {
-        return documentIndexWeightRepository
-            .findByDocumentIdOrderByIndexIdAsc(document.getId())
-            .stream().map(DocumentIndexWeight::getWeight).collect(Collectors.toList());
+
+        return document.getDocumentIndexWeights()
+            .stream().sorted(Comparator.comparingLong(p -> p.getIndex().getId()))
+            .map(DocumentIndexWeight::getWeight).collect(Collectors.toList());
     }
 
     private void addElementToResultList(double similarityMeasure, Document document,

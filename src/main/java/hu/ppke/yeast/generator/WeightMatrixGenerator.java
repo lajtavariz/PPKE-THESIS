@@ -7,6 +7,7 @@ import hu.ppke.yeast.domain.Index;
 import hu.ppke.yeast.repository.DocumentIndexWeightRepository;
 import hu.ppke.yeast.repository.DocumentRepository;
 import hu.ppke.yeast.repository.IndexRepository;
+import hu.ppke.yeast.service.DocumentIndexWeightService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,18 +30,23 @@ import static hu.ppke.yeast.calculator.WeightCalculator.calculateWeight;
 public class WeightMatrixGenerator {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private final IndexRepository indexRepository;
     private final DocumentRepository documentRepository;
     private final DocumentIndexWeightRepository documentIndexWeightRepository;
+    private final DocumentIndexWeightService documentIndexWeightService;
+
     private int nrOfAllDocuments;
 
     @Autowired
     public WeightMatrixGenerator(IndexRepository indexRepository,
                                  DocumentRepository documentRepository,
-                                 DocumentIndexWeightRepository documentIndexWeightRepository) {
+                                 DocumentIndexWeightRepository documentIndexWeightRepository,
+                                 DocumentIndexWeightService documentIndexWeightService) {
         this.indexRepository = indexRepository;
         this.documentRepository = documentRepository;
         this.documentIndexWeightRepository = documentIndexWeightRepository;
+        this.documentIndexWeightService = documentIndexWeightService;
     }
 
     public void calculateAndPersistWeights() {
@@ -55,25 +61,31 @@ public class WeightMatrixGenerator {
             log.info("Generating weights for Document " + currentDoc.getId());
 
             final List<DocumentIndex> documentIndices = new ArrayList<>(currentDoc.getDocumentIndices());
-            persistWeightsForOwnIndices(documentIndices);
+            final List<DocumentIndexWeight> weightsForOwnIndices =
+                getWeightsForOwnIndices(documentIndices);
+            final List<DocumentIndexWeight> weightsForOtherIndices =
+                getWeightsForOtherIndices(getOtherIndices(documentIndices, allIndices), currentDoc);
 
-            final List<Index> otherIndices = getOtherIndices(documentIndices, allIndices);
-            persistWeightsForOtherIndices(otherIndices, currentDoc.getId());
+            List<DocumentIndexWeight> allWeights = new ArrayList<>();
+            allWeights.addAll(weightsForOwnIndices);
+            allWeights.addAll(weightsForOtherIndices);
+
+            documentIndexWeightService.save(currentDoc, allWeights);
         }
     }
 
-    private void persistWeightsForOwnIndices(final List<DocumentIndex> documentIndices) {
+    private List<DocumentIndexWeight> getWeightsForOwnIndices(final List<DocumentIndex> documentIndices) {
 
         List<DocumentIndexWeight> documentIndexWeights = new ArrayList<>();
 
         for (DocumentIndex documentIndex : documentIndices) {
             double weight = calculateWeight(documentIndex.getCount(), nrOfAllDocuments, documentIndex.getIndex().getDocumentCount());
             documentIndexWeights.add(new DocumentIndexWeight()
-                .setDocumentId(documentIndex.getDocument().getId())
-                .setIndexId(documentIndex.getIndex().getId())
+                .setDocument(documentIndex.getDocument())
+                .setIndex(documentIndex.getIndex())
                 .setWeight(weight));
         }
-        documentIndexWeightRepository.save(documentIndexWeights);
+        return documentIndexWeights;
     }
 
     @SuppressWarnings("unchecked")
@@ -86,16 +98,16 @@ public class WeightMatrixGenerator {
         return (List<Index>) CollectionUtils.removeAll(allIndices, indicesForDoc);
     }
 
-    private void persistWeightsForOtherIndices(final List<Index> otherIndices, Long documentId) {
+    private List<DocumentIndexWeight> getWeightsForOtherIndices(final List<Index> otherIndices, Document document) {
 
         List<DocumentIndexWeight> documentIndexWeights = new ArrayList<>();
 
         for (Index currentIndex : otherIndices) {
             documentIndexWeights.add(new DocumentIndexWeight()
-                .setDocumentId(documentId)
-                .setIndexId(currentIndex.getId())
+                .setDocument(document)
+                .setIndex(currentIndex)
                 .setWeight(0.0));
         }
-        documentIndexWeightRepository.save(documentIndexWeights);
+        return documentIndexWeights;
     }
 }

@@ -36,6 +36,9 @@ public class Document implements Serializable {
     @OneToMany(mappedBy = "document")
     private Set<DocumentIndex> documentIndices = new HashSet<>();
 
+    @OneToMany(mappedBy = "document")
+    private Set<DocumentIndexWeight> documentIndexWeights = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -70,6 +73,14 @@ public class Document implements Serializable {
 
     public void setDocumentIndices(Set<DocumentIndex> documentIndices) {
         this.documentIndices = documentIndices;
+    }
+
+    public Set<DocumentIndexWeight> getDocumentIndexWeights() {
+        return documentIndexWeights;
+    }
+
+    public void setDocumentIndexWeights(Set<DocumentIndexWeight> documentIndexWeights) {
+        this.documentIndexWeights = documentIndexWeights;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove

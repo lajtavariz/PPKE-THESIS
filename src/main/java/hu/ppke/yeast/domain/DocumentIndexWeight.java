@@ -22,13 +22,15 @@ public class DocumentIndexWeight implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "document_id")
     @NotNull
-    @Column(name = "document_id")
-    private Long documentId;
+    private Document document;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "index_id")
     @NotNull
-    @Column(name = "index_id")
-    private Long indexId;
+    private Index index;
 
     @Column(name = "weight")
     private Double weight;
@@ -37,21 +39,21 @@ public class DocumentIndexWeight implements Serializable {
         return id;
     }
 
-    public Long getDocumentId() {
-        return documentId;
+    public Document getDocument() {
+        return document;
     }
 
-    public DocumentIndexWeight setDocumentId(Long documentId) {
-        this.documentId = documentId;
+    public DocumentIndexWeight setDocument(Document document) {
+        this.document = document;
         return this;
     }
 
-    public Long getIndexId() {
-        return indexId;
+    public Index getIndex() {
+        return index;
     }
 
-    public DocumentIndexWeight setIndexId(Long indexId) {
-        this.indexId = indexId;
+    public DocumentIndexWeight setIndex(Index index) {
+        this.index = index;
         return this;
     }
 
@@ -74,17 +76,16 @@ public class DocumentIndexWeight implements Serializable {
         }
         DocumentIndexWeight docIndWeight = (DocumentIndexWeight) o;
 
-        return Objects.equals(this.getDocumentId(), docIndWeight.getDocumentId())
-            && Objects.equals(this.getIndexId(), docIndWeight.getIndexId())
-            && Objects.equals(this.getWeight(), docIndWeight.getWeight());
+        if (docIndWeight.getId() == null || getId() == null) {
+            return false;
+        }
+        return Objects.equals(getId(), docIndWeight.getId());
     }
 
     @Override
     public String toString() {
         return "DocumentIndexWeight{" +
             "id=" + getId() +
-            "documentId=" + getDocumentId() +
-            ", indexId=" + getIndexId() +
             ", weight=" + getWeight() +
             "}";
     }
