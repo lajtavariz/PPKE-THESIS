@@ -1,8 +1,16 @@
 package hu.ppke.yeast.service.dto.evaluation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ADIQuery {
-    int id;
-    String query;
+    private int id;
+    private String query;
+    private List<Long> relevantDocuments = new ArrayList<>();
+
+    public void addRelevantDocument(Long id) {
+        relevantDocuments.add(id);
+    }
 
     public int getId() {
         return id;
@@ -20,5 +28,9 @@ public class ADIQuery {
     public ADIQuery setQuery(String query) {
         this.query = query;
         return this;
+    }
+
+    public List<Long> getRelevantDocuments() {
+        return relevantDocuments;
     }
 }

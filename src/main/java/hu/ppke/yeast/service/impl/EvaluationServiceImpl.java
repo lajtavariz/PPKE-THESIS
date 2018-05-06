@@ -1,5 +1,6 @@
 package hu.ppke.yeast.service.impl;
 
+import com.opencsv.CSVReader;
 import hu.ppke.yeast.enumeration.SimiliarityMeasure;
 import hu.ppke.yeast.service.EvaluationService;
 import hu.ppke.yeast.service.dto.evaluation.ADIArticle;
@@ -15,8 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for the similarity measure evaluation
@@ -40,38 +43,59 @@ public class EvaluationServiceImpl implements EvaluationService {
     @PostConstruct
     public void init() throws Exception {
         loadArticles();
-        validateArticles();
-
+        loadQueries();
+        loadRels();
     }
 
     private void loadArticles() throws Exception {
         Resource resource = resourceLoader.getResource("classpath:" + "similarity_eval/adi/ADI.ALL");
-        log.debug("Loading documents from ADI test collection...");
-        String adiAll = IOUtils.toString(resource.getInputStream(), "UTF-8");
-        String[] articles = adiAll.split("\\.I");
+        log.debug("Loading articles from ADI test collection");
+        String readString = IOUtils.toString(resource.getInputStream(), "UTF-8");
+        String[] articles = readString.split("\\.I");
 
         for (int i = 1; i < articles.length; i++) {
             String article = articles[i];
-            String[] splittedArticle = article.split("\\.T|\\.A|\\.W");
+            String[] splitArticle = article.split("\\.T|\\.A|\\.W");
 
             adiArticles.add(new ADIArticle()
-                .setId(Integer.parseInt(splittedArticle[0].replaceAll("[^\\d]", "")))
-                .setTitle(splittedArticle[1])
-                .setContent(splittedArticle[splittedArticle.length - 1]));
+                .setId(Integer.parseInt(splitArticle[0].replaceAll("[^\\d]", "")))
+                .setTitle(splitArticle[1])
+                .setContent(splitArticle[splitArticle.length - 1]));
         }
     }
 
-    private void validateArticles() throws Exception {
-        assert adiArticles.size() == 82;
-        assert adiArticles.get(0).getId() == 1;
-        assert adiArticles.get(0).getTitle().equals("\r\nthe ibm dsd technical information center - a total systems approach\r\n" +
-            "combining traditional library features\r\n" +
-            "and mechanized computer processing\r\n");
-        assert adiArticles.get(81).getId() == 82;
-        assert adiArticles.get(81).getTitle().equals("\r\nmachine recognition of linguistic synonymy and logical deducibility .\r\n");
-        assert adiArticles.get(66).getContent().equals("\r\na national plan for science abstracting and indexing services is\r\n" +
-            "presented .  both profession oriented services and project oriented\r\n" +
-            "services are considered .  market, volume and cost are discussed .\r\n");
+    private void loadQueries() throws Exception {
+        Resource resource = resourceLoader.getResource("classpath:" + "similarity_eval/adi/ADI.QRY");
+        log.debug("Loading queries from ADI test collection");
+        String readString = IOUtils.toString(resource.getInputStream(), "UTF-8");
+        String[] queries = readString.split("\\.I");
+
+        for (int i = 1; i < queries.length; i++) {
+            String query = queries[i];
+            String[] splitQuery = query.split("\\.W");
+
+            adiQueries.add(new ADIQuery()
+                .setId(Integer.parseInt(splitQuery[0].replaceAll("[^\\d]", "")))
+                .setQuery(splitQuery[1]));
+        }
+    }
+
+    private void loadRels() throws Exception {
+        Resource resource = resourceLoader.getResource("classpath:" + "similarity_eval/adi/ADI.REL");
+        log.debug("Loading rels from ADI test collection");
+        CSVReader csvReader = new CSVReader(new InputStreamReader(resource.getInputStream()));
+        List<String[]> records = csvReader.readAll();
+        assert records.size() == 170;
+
+        for (ADIQuery adiQuery : adiQueries) {
+            List<String[]> filteredRecords = records.stream()
+                .filter(p -> Integer.parseInt(p[0]) == adiQuery.getId())
+                .collect(Collectors.toList());
+
+            for (String[] record : filteredRecords) {
+                adiQuery.addRelevantDocument(Long.parseLong(record[1]));
+            }
+        }
     }
 
     @Override
