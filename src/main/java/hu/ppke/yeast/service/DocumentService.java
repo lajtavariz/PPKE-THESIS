@@ -22,12 +22,12 @@ public interface DocumentService {
     DocumentDTO save(DocumentDTO documentDTO);
 
     /**
-     * Save a document.
+     * Save multiple documents.
      *
-     * @param document the entity to save
-     * @return the persisted entity
+     * @param documents the list of documents to save
+     * @return the persisted documents
      */
-    Document save(Document document);
+    List<Document> saveMultiple(List<Document> documents);
 
 
     /**

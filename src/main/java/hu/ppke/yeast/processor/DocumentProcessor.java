@@ -7,6 +7,7 @@ import hu.ppke.yeast.service.DocumentIndexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ import java.util.Set;
  * 4. Persist the indices
  */
 @Component
+@Transactional
 public class DocumentProcessor extends AbstractProcessor {
 
 

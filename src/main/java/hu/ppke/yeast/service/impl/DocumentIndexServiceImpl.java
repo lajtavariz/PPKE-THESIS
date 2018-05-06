@@ -50,8 +50,8 @@ public class DocumentIndexServiceImpl implements DocumentIndexService {
     @Override
     public void clearDB() {
         documentIndexWeightRepository.deleteAll();
+        docIndexRepository.deleteAll();
         documentRepository.deleteAll();
         indexRepository.deleteAll();
-        documentIndexWeightRepository.deleteAll();
     }
 }

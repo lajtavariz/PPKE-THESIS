@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -53,16 +54,26 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDTO save(DocumentDTO documentDTO) {
         Document document = documentMapper.toEntity(documentDTO);
         document = save(document);
+        weightMatrixGenerator.calculateAndPersistWeights();
 
         return documentMapper.toDto(document);
     }
 
     @Override
-    public Document save(Document document) {
-        log.debug("Request to save Document : {}", document);
+    public List<Document> saveMultiple(List<Document> documents) {
+        List<Document> persistedDocuments = new ArrayList<>();
+        for (Document document : documents) {
+            persistedDocuments.add(save(document));
+        }
+        weightMatrixGenerator.calculateAndPersistWeights();
+
+        return persistedDocuments;
+    }
+
+    private Document save(Document document) {
+        log.debug("Request to save Document : {}", document.getId());
         document = documentRepository.save(document);
         documentProcessor.processDocument(document);
-        weightMatrixGenerator.calculateAndPersistWeights();
 
         return document;
     }
@@ -85,7 +96,9 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<DocumentSearchResultDTO> search(String query, int measure) {
-        return queryProcessor.getRelevantDocuments(query, SimiliarityMeasure.getMeasure(measure));
+        SimiliarityMeasure similiarityMeasure = SimiliarityMeasure.getMeasure(measure);
+        log.debug("Search with measure " + similiarityMeasure + "\n and with query " + query);
+        return queryProcessor.getRelevantDocuments(query, similiarityMeasure);
     }
 
     @Override

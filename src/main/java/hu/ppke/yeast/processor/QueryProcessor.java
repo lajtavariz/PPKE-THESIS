@@ -12,6 +12,7 @@ import hu.ppke.yeast.service.mapper.DocumentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import static hu.ppke.yeast.enumeration.SimiliarityMeasure.HYPERBOLIC;
  * This class is responsible for giving back the relevant documents for a given query
  */
 @Component
+@Transactional
 public class QueryProcessor extends AbstractProcessor {
 
     private final DocumentRepository documentRepository;

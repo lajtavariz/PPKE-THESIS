@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import static hu.ppke.yeast.calculator.WeightCalculator.calculateWeight;
  * This class is responsible for generating the weight for each possible Document-Index pair
  */
 @Component
+@Transactional
 public class WeightMatrixGenerator {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -50,7 +52,7 @@ public class WeightMatrixGenerator {
 
         for (Document currentDoc : allDocuments) {
 
-            log.debug("Generating weights for Document " + currentDoc.getId());
+            log.info("Generating weights for Document " + currentDoc.getId());
 
             final List<DocumentIndex> documentIndices = new ArrayList<>(currentDoc.getDocumentIndices());
             persistWeightsForOwnIndices(documentIndices);
@@ -62,13 +64,16 @@ public class WeightMatrixGenerator {
 
     private void persistWeightsForOwnIndices(final List<DocumentIndex> documentIndices) {
 
+        List<DocumentIndexWeight> documentIndexWeights = new ArrayList<>();
+
         for (DocumentIndex documentIndex : documentIndices) {
             double weight = calculateWeight(documentIndex.getCount(), nrOfAllDocuments, documentIndex.getIndex().getDocumentCount());
-            documentIndexWeightRepository.saveAndFlush(new DocumentIndexWeight()
+            documentIndexWeights.add(new DocumentIndexWeight()
                 .setDocumentId(documentIndex.getDocument().getId())
-                .setIndexId(documentIndex.getIndex().getId()))
-                .setWeight(weight);
+                .setIndexId(documentIndex.getIndex().getId())
+                .setWeight(weight));
         }
+        documentIndexWeightRepository.save(documentIndexWeights);
     }
 
     @SuppressWarnings("unchecked")
@@ -83,11 +88,14 @@ public class WeightMatrixGenerator {
 
     private void persistWeightsForOtherIndices(final List<Index> otherIndices, Long documentId) {
 
+        List<DocumentIndexWeight> documentIndexWeights = new ArrayList<>();
+
         for (Index currentIndex : otherIndices) {
-            documentIndexWeightRepository.saveAndFlush(new DocumentIndexWeight()
+            documentIndexWeights.add(new DocumentIndexWeight()
                 .setDocumentId(documentId)
-                .setIndexId(currentIndex.getId()))
-                .setWeight(0.0);
+                .setIndexId(currentIndex.getId())
+                .setWeight(0.0));
         }
+        documentIndexWeightRepository.save(documentIndexWeights);
     }
 }

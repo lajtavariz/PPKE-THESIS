@@ -39,7 +39,7 @@ public class EvaluationResource {
      */
     @RequestMapping(value = "/evaluate", method = RequestMethod.GET)
     @Timed
-    public ResponseEntity<EvaluationResultDTO> searchDocuments(@RequestParam int measure) {
+    public ResponseEntity<EvaluationResultDTO> evaluate(@RequestParam int measure) {
         log.debug("REST request to get the results of the similarity measure evaluation");
         EvaluationResultDTO evaluationResultDTO = evaluationService.evaluate(measure);
 

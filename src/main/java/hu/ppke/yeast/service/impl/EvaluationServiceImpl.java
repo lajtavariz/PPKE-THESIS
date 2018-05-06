@@ -114,14 +114,17 @@ public class EvaluationServiceImpl implements EvaluationService {
         documentIndexService.clearDB();
         EvaluationResultDTO evaluationResult = new EvaluationResultDTO();
 
+        List<Document> documentsToSave = new ArrayList<>();
         for (ADIArticle article : articles) {
             Document document = new Document()
                 .setCreation_date(LocalDate.now())
                 .setId(article.getId())
                 .setContent(article.getTitle() + " " + article.getContent());
 
-            documentService.save(document);
+            documentsToSave.add(document);
         }
+
+        documentService.saveMultiple(documentsToSave);
 
         for (ADIQuery query : queries) {
             List<DocumentSearchResultDTO> searchResults = documentService.search(query.getQuery(), measure);
