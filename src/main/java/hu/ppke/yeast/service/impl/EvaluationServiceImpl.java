@@ -9,7 +9,7 @@ import hu.ppke.yeast.service.dto.DocumentSearchResultDTO;
 import hu.ppke.yeast.service.dto.EvaluationResultDTO;
 import hu.ppke.yeast.service.dto.evaluation.ADIArticle;
 import hu.ppke.yeast.service.dto.evaluation.ADIQuery;
-import hu.ppke.yeast.service.dto.evaluation.QueryStatistic;
+import hu.ppke.yeast.service.dto.evaluation.RecallPrecision;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static hu.ppke.yeast.calculator.SimilarityEvaluationCalculator.*;
 
 /**
  * Service Implementation for the similarity measure evaluation
@@ -126,23 +128,16 @@ public class EvaluationServiceImpl implements EvaluationService {
 
         documentService.saveMultiple(documentsToSave);
 
+        List<List<RecallPrecision>> allRecallPrecisionLists = new ArrayList<>();
+
         for (ADIQuery query : queries) {
             List<DocumentSearchResultDTO> searchResults = documentService.search(query.getQuery(), measure);
             evaluationResult.addQueryStatistic(generateQueryStatistic(searchResults, query));
+            allRecallPrecisionLists.add(calculateRecallPrecisionList(searchResults, query));
         }
 
+        evaluationResult.setRecallPrecisions(calculateAverageRecallPrecisionList(allRecallPrecisionLists));
 
         return evaluationResult;
-    }
-
-    private QueryStatistic generateQueryStatistic(List<DocumentSearchResultDTO> searchResults, ADIQuery query) {
-        double rA = searchResults.stream().filter(p -> query.getRelevantDocuments().contains(p.getEvaluationId())).count();
-        double r = query.getRelevantDocuments().size();
-        double a = searchResults.size();
-
-        double recall = rA / r;
-        double precision = rA / a;
-
-        return new QueryStatistic().setId(query.getId()).setRecall(recall).setPrecision(precision);
     }
 }

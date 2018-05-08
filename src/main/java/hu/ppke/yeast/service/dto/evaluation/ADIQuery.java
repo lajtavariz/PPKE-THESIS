@@ -34,4 +34,9 @@ public class ADIQuery {
     public List<Long> getRelevantDocuments() {
         return relevantDocuments;
     }
+
+    public ADIQuery setRelevantDocuments(List<Long> relevantDocuments) {
+        this.relevantDocuments = relevantDocuments;
+        return this;
+    }
 }

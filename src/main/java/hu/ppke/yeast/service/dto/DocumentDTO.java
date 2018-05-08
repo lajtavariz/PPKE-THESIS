@@ -23,7 +23,7 @@ public class DocumentDTO implements Serializable {
     public DocumentDTO() {
     }
 
-    DocumentDTO(Long id, LocalDate creation_date, String content, Long evaluationId) {
+    public DocumentDTO(Long id, LocalDate creation_date, String content, Long evaluationId) {
         this.id = id;
         this.creation_date = creation_date;
         this.content = content;
