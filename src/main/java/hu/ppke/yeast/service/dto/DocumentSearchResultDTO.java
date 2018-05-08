@@ -5,7 +5,7 @@ public class DocumentSearchResultDTO extends DocumentDTO {
     private double similarityMeasure;
 
     public DocumentSearchResultDTO(DocumentDTO documentDTO, double similarityMeasure) {
-        super(documentDTO.getId(), documentDTO.getCreation_date(), documentDTO.getContent());
+        super(documentDTO.getId(), documentDTO.getCreation_date(), documentDTO.getContent(), documentDTO.getEvaluationId());
         this.similarityMeasure = similarityMeasure;
     }
 

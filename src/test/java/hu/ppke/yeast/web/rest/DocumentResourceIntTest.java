@@ -55,6 +55,10 @@ public class DocumentResourceIntTest {
     private static final LocalDate DEFAULT_CREATION_DATE = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_CREATION_DATE = LocalDate.now(ZoneId.systemDefault());
 
+    private static final Long EVALUATION_ID_1 = 1L;
+    private static final Long EVALUATION_ID_2 = 2L;
+    private static final Long EVALUATION_ID_3 = 3L;
+
     private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
     private static final String UPDATED_CONTENT = "BBBBBBBBBB";
     private static final String CONTENT1 = "The quick 8brown {fox} jumped over the lazy dog,999 then the dog and the fox eat the rabbit.";
@@ -136,7 +140,8 @@ public class DocumentResourceIntTest {
     public static Document createEntity(EntityManager em) {
         Document document = new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
-            .setContent(DEFAULT_CONTENT);
+            .setContent(DEFAULT_CONTENT)
+            .setEvaluationId(EVALUATION_ID_1);
         return document;
     }
 
@@ -159,6 +164,7 @@ public class DocumentResourceIntTest {
         Document testDocument = documentList.get(documentList.size() - 1);
         assertThat(testDocument.getCreation_date()).isEqualTo(DEFAULT_CREATION_DATE);
         assertThat(testDocument.getContent()).isEqualTo(DEFAULT_CONTENT);
+        assertThat(testDocument.getEvaluationId()).isEqualTo(EVALUATION_ID_1);
     }
 
     @Test
@@ -281,37 +287,46 @@ public class DocumentResourceIntTest {
         // Create the documents
         doPostRequestAndValidateResponse(new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
-            .setContent(CONTENT1), HttpStatus.CREATED);
+            .setContent(CONTENT1)
+            .setEvaluationId(EVALUATION_ID_1), HttpStatus.CREATED);
 
         doPostRequestAndValidateResponse(new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
-            .setContent(CONTENT2), HttpStatus.CREATED);
+            .setContent(CONTENT2)
+            .setEvaluationId(EVALUATION_ID_2), HttpStatus.CREATED);
 
         doPostRequestAndValidateResponse(new Document()
             .setCreation_date(DEFAULT_CREATION_DATE)
-            .setContent(CONTENT3), HttpStatus.CREATED);
+            .setContent(CONTENT3)
+            .setEvaluationId(EVALUATION_ID_3), HttpStatus.CREATED);
 
         // Validate
         ResultActions response = doSearchAndValidateResponse(QUERY1, 0, HttpStatus.OK);
         response.andExpect(jsonPath("$.*    ", hasSize(2)));
         response.andExpect(jsonPath("$.[0].content").value(CONTENT1));
         response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.5466396719850004"));
+        response.andExpect(jsonPath("$.[0].evaluationId").value(EVALUATION_ID_1));
         response.andExpect(jsonPath("$.[1].content").value(CONTENT2));
         response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.07852284477467994"));
+        response.andExpect(jsonPath("$.[1].evaluationId").value(EVALUATION_ID_2));
 
         response = doSearchAndValidateResponse(QUERY2, 0, HttpStatus.OK);
         response.andExpect(jsonPath("$.*    ", hasSize(2)));
         response.andExpect(jsonPath("$.[0].content").value(CONTENT3));
         response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.7293023054525128"));
+        response.andExpect(jsonPath("$.[0].evaluationId").value(EVALUATION_ID_3));
         response.andExpect(jsonPath("$.[1].content").value(CONTENT2));
         response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.10766844446756353"));
+        response.andExpect(jsonPath("$.[1].evaluationId").value(EVALUATION_ID_2));
 
         response = doSearchAndValidateResponse(QUERY3, 0, HttpStatus.OK);
         response.andExpect(jsonPath("$.*    ", hasSize(2)));
         response.andExpect(jsonPath("$.[0].content").value(CONTENT2));
         response.andExpect(jsonPath("$.[0].similarityMeasure").value("0.4397686327965182"));
+        response.andExpect(jsonPath("$.[0].evaluationId").value(EVALUATION_ID_2));
         response.andExpect(jsonPath("$.[1].content").value(CONTENT1));
         response.andExpect(jsonPath("$.[1].similarityMeasure").value("0.36701832226218667"));
+        response.andExpect(jsonPath("$.[1].evaluationId").value(EVALUATION_ID_1));
 
         response = doSearchAndValidateResponse(QUERY4, 0, HttpStatus.OK);
         response.andExpect(jsonPath("$.*    ", hasSize(0)));
@@ -424,7 +439,8 @@ public class DocumentResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(document.getId().intValue())))
             .andExpect(jsonPath("$.[*].creation_date").value(hasItem(DEFAULT_CREATION_DATE.toString())))
-            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT.toString())));
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT.toString())))
+            .andExpect(jsonPath("$.[*].evaluationId").value(EVALUATION_ID_1.intValue()));
     }
 
     @Test
@@ -439,7 +455,8 @@ public class DocumentResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(document.getId().intValue()))
             .andExpect(jsonPath("$.creation_date").value(DEFAULT_CREATION_DATE.toString()))
-            .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT.toString()));
+            .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT.toString()))
+            .andExpect(jsonPath("$.evaluationId").value(EVALUATION_ID_1.intValue()));
     }
 
     @Test
@@ -463,7 +480,8 @@ public class DocumentResourceIntTest {
         em.detach(updatedDocument);
         updatedDocument
             .setCreation_date(UPDATED_CREATION_DATE)
-            .setContent(UPDATED_CONTENT);
+            .setContent(UPDATED_CONTENT)
+            .setEvaluationId(EVALUATION_ID_2);
         DocumentDTO documentDTO = documentMapper.toDto(updatedDocument);
 
         restDocumentMockMvc.perform(put("/api/documents")
@@ -477,6 +495,7 @@ public class DocumentResourceIntTest {
         Document testDocument = documentList.get(documentList.size() - 1);
         assertThat(testDocument.getCreation_date()).isEqualTo(UPDATED_CREATION_DATE);
         assertThat(testDocument.getContent()).isEqualTo(UPDATED_CONTENT);
+        assertThat(testDocument.getEvaluationId()).isEqualTo(EVALUATION_ID_2);
     }
 
     @Test

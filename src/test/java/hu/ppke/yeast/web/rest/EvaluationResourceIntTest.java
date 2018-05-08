@@ -60,7 +60,7 @@ public class EvaluationResourceIntTest {
     @Ignore
     public void test1() throws Exception {
         String result = restMockMvc.perform(get("/api/evaluate")
-            .param("measure", "0"))
+            .param("measure", "1"))
             .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         int a = 5;
