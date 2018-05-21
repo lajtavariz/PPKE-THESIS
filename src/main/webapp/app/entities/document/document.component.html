@@ -39,7 +39,8 @@
                                 [routerLink]="['/', { outlets: { popup: 'document/'+ document.id + '/edit'} }]"
                                 replaceUrl="true"
                                 queryParamsHandling="merge"
-                                class="btn btn-primary btn-sm">
+                                class="btn btn-primary btn-sm"
+                                hidden="true">
                             <span class="fa fa-pencil"></span>
                             <span class="d-none d-md-inline">Edit</span>
                         </button>
@@ -47,7 +48,8 @@
                                 [routerLink]="['/', { outlets: { popup: 'document/'+ document.id + '/delete'} }]"
                                 replaceUrl="true"
                                 queryParamsHandling="merge"
-                                class="btn btn-danger btn-sm">
+                                class="btn btn-danger btn-sm"
+                                hidden="true">
                             <span class="fa fa-remove"></span>
                             <span class="d-none d-md-inline">Delete</span>
                         </button>
