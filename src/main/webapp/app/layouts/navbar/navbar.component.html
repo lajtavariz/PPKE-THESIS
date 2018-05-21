@@ -17,7 +17,8 @@
                     </span>
                 </a>
             </li>
-            <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <li *jhiHasAnyAuthority="'ROLE_ADMIN'" class="nav-item" routerLinkActive="active"
+                [routerLinkActiveOptions]="{exact: true}">
                 <a class="nav-link" routerLink="document-search" (click)="collapseNavbar()">
                     <span>
                         <i class="fa fa-search" aria-hidden="true"></i>
