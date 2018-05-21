@@ -1,16 +1,48 @@
 <div>
     <h2>
-        <span>Search in the documents</span>
+        <span>Search for documents</span>
     </h2>
     <jhi-alert></jhi-alert>
     <div class="-align-left">
         <div class="form-group">
-            <input type="text" class="form-control" name="content" id="field_content"/>
+            <input type="text" class="form-control" name="content" id="search_query" #search_query/>
         </div>
-        <button class="btn btn-primary float-right jh-create-entity create-document">
+        <button class="btn btn-primary float-left jh-create-entity create-document"
+                (click)="onSearch(search_query.value, measure.value)">
             <span>
             Search
             </span>
         </button>
+        <div class="form-group row">
+            <div class="col-xs-2">
+                <select class="form-control" style="margin-left: 5px !important" #measure>
+                    <option value="0">Cosine</option>
+                    <option value="1">Hyperbolic</option>
+                    <option value="2">Dot product</option>
+                    <option value="3">Dice</option>
+                    <option value="4">Jaccard</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive" *ngIf="documentSearchResults">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th><span>Similarity measure</span></th>
+                <th><span>ID</span></th>
+                <th><span>Creation date</span></th>
+                <th><span>Content</span></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let document of documentSearchResults">
+                <td>{{document.similarityMeasure}}</td>
+                <td>{{document.id}}</td>
+                <td>{{document.creation_date | date:'mediumDate'}}</td>
+                <td>{{document.content}}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>

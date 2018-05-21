@@ -1,17 +1,18 @@
-import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
-import { SERVER_API_URL } from '../../app.constants';
+import {Injectable} from '@angular/core';
+import {BaseRequestOptions, Http, Response, URLSearchParams} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
+import {SERVER_API_URL} from '../../app.constants';
 
-import { JhiDateUtils } from 'ng-jhipster';
+import {JhiDateUtils} from 'ng-jhipster';
 
-import { Document } from './document.model';
-import { ResponseWrapper, createRequestOption } from '../../shared';
+import {Document} from './document.model';
+import {createRequestOption, ResponseWrapper} from '../../shared';
 
 @Injectable()
 export class DocumentService {
 
     private resourceUrl =  SERVER_API_URL + 'api/documents';
+    private searchUrl = SERVER_API_URL + 'api/documents/search'
 
     constructor(private http: Http, private dateUtils: JhiDateUtils) { }
 
@@ -41,6 +42,17 @@ export class DocumentService {
     query(req?: any): Observable<ResponseWrapper> {
         const options = createRequestOption(req);
         return this.http.get(this.resourceUrl, options)
+            .map((res: Response) => this.convertResponse(res));
+    }
+
+    search(query: string, measure: string): Observable<ResponseWrapper> {
+        const options: BaseRequestOptions = new BaseRequestOptions();
+        const params: URLSearchParams = new URLSearchParams();
+        params.set('query', query);
+        params.set('measure', measure);
+        options.params = params;
+
+        return this.http.get(this.searchUrl, options)
             .map((res: Response) => this.convertResponse(res));
     }
 
