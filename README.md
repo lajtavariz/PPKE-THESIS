@@ -1,7 +1,7 @@
 # yeast
-This application is an Information Retrieval system. After starting the application, you'll be able to upload text content to the system. After uploading some documents, you'll be able to perform a search on them using different similarity measures.
+This application is an Information Retrieval system.
 
-## Development
+## Prerequisites 
 
 Before you can build this project, you must install and configure the following dependencies on your machine:
 
@@ -10,6 +10,8 @@ Before you can build this project, you must install and configure the following 
 3. NPM v5.6.0 or higher
 4. Maven v3.3.9 or higher
 5. Java SE Development Kit v1.8.0_171 or higher
+
+## Build & Run
 
 After installing Node, you should be able to run the following command to install development tools.
 You will only need to run this command when dependencies change in package.json.
@@ -26,3 +28,7 @@ Yarn is also used to manage CSS and JavaScript dependencies used in this applica
 specifying a newer version in package.json. You can also run `yarn update` and `yarn install` to manage dependencies.
 
 The `yarn run` command will list all of the scripts available to run for this project.
+
+## A very brief user manual
+
+After starting the application, you'll be able to upload text content to the system. After uploading some documents, you'll be able to perform a search on them using different similarity measures.
