@@ -31,4 +31,4 @@ The `yarn run` command will list all of the scripts available to run for this pr
 
 ## A very brief user manual
 
-After starting the application, you'll be able to upload text content to the system. After uploading some documents, you'll be able to perform a search on them using different similarity measures.
+After starting the application, you'll be able to upload text content to the system. After uploading some documents, you'll be able to perform a search on them using different similarity measures. You should upload at least 10 documents. While performing a search you can try entering not just keywords but a whole question.
