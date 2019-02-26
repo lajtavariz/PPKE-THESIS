@@ -1,5 +1,5 @@
 # yeast
-This application is an Information Retrieval system. You can upload and search documents, and evaluate the system.
+This application is an Information Retrieval system. After starting the application, you'll be able to upload text content to the system. After uploading some documents, you'll be able to perform a search on them using different similarity measures.
 
 ## Development
 
